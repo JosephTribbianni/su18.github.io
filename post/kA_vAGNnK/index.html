@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" >
 
-<title>标签列表 | 素十八</title>
+<title>你好，我叫素十八 | 素十八</title>
 <meta name="description" content="暖风熏得游人醉，直把杭州作汴州。">
 
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -13,6 +13,12 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://su18.org/styles/main.css">
 
+
+  
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
+  
+
+  
 
 
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -103,10 +109,38 @@
 
       <div class="main-container">
         <div class="content-container" data-aos="fade-up">
-          <h2 class="tag-list-title">标签列表</h2>
-          <div class="tags-container">
+          <div class="post-detail">
+            <h2 class="post-title">你好，我叫素十八</h2>
+            <div class="post-date">2019-08-30</div>
             
+            <div class="post-content">
+              <p>你好，首先欢迎您访问我的个人博客。<br>
+我的网名现在叫素十八，在其他的位置用的最多的可能是 “案首梦”，如果您在其他论坛看到这个 ID，您就知道，那也是我。<br>
+再古老的ID就不想提了，那都是过去了。<br>
+您是为数不多的访问过此网站的人，所以，谢谢您，能在此停留。<br>
+从玩计算机到搭建博客至今，也折腾了很久了。<br>
+如果您对我的过去感兴趣，您可以通过左侧的 2017 ，2018 观看我过去的博客。<br>
+当然，很多文章我都删掉了。<br>
+这次终于选择放弃了厚重的 wordpress, 将怀抱投向了 Markdown。<br>
+希望是一个新的开始。<br>
+您要知道，我还在路上，路还很远。<br>
+我会变得越来越好。<br>
+希望您也是。</p>
+
+            </div>
+            
+            
+
+            
+              
+                <div id="gitalk-container" data-aos="fade-in"></div>
+              
+
+              
+            
+
           </div>
+
         </div>
       </div>
     </div>
@@ -127,6 +161,29 @@ var app = new Vue({
 })
 
 </script>
+
+
+
+  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+
+      var gitalk = new Gitalk({
+        clientID: 'f7b59be97fcefada5030',
+        clientSecret: 'dfbf7baf0b69544dbf1bc8c904338e31280cea7f',
+        repo: 'blogtalk',
+        owner: 'JosephTribbianni',
+        admin: ['JosephTribbianni'],
+        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+      gitalk.render('gitalk-container')
+
+    </script>
+  
+
+  
 
 
 
