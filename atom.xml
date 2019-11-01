@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://su18.org</id>
     <title>素十八</title>
-    <updated>2019-08-31T17:45:54.949Z</updated>
+    <updated>2019-11-01T03:42:07.514Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://su18.org"/>
     <link rel="self" href="https://su18.org/atom.xml"/>
@@ -10,6 +10,13 @@
     <logo>https://su18.org/images/avatar.png</logo>
     <icon>https://su18.org/favicon.ico</icon>
     <rights>All rights reserved 2019, 素十八</rights>
+    <entry>
+        <title type="html"><![CDATA[中国特色PHP大马]]></title>
+        <id>https://su18.org/post/EiNzuduRG</id>
+        <link href="https://su18.org/post/EiNzuduRG">
+        </link>
+        <updated>2019-11-01T03:32:30.000Z</updated>
+    </entry>
     <entry>
         <title type="html"><![CDATA[您好，我叫素十八]]></title>
         <id>https://su18.org/post/kA_vAGNnK</id>
