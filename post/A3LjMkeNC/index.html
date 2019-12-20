@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" >
+
+<title>Java 反射 | 素十八</title>
+<meta name="description" content="暖风熏得游人醉，直把杭州作汴州。">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://su18.org/favicon.ico?v=1576831323007">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://su18.org/styles/main.css">
+
+
+  
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
+  
+
+  
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+
+      <div class="sidebar" :class="{ 'full-height': menuVisible }">
+  <div class="top-container" data-aos="fade-right">
+    <div class="top-header-container">
+      <a class="site-title-container" href="https://su18.org">
+        <img src="https://su18.org/images/avatar.png?v=1576831323007" class="site-logo">
+        <h1 class="site-title">素十八</h1>
+      </a>
+      <div class="menu-btn" @click="menuVisible = !menuVisible">
+        <div class="line"></div>
+      </div>
+    </div>
+    <div>
+      
+        
+          <a href="/" class="site-nav">
+            首页
+          </a>
+        
+      
+        
+          <a href="/archives" class="site-nav">
+            归档
+          </a>
+        
+      
+        
+          <a href="/tags" class="site-nav">
+            标签
+          </a>
+        
+      
+        
+          <a href="http://2017.su18.org" class="site-nav" target="_blank">
+            2017
+          </a>
+        
+      
+        
+          <a href="http://2018.su18.org" class="site-nav" target="_blank">
+            2018
+          </a>
+        
+      
+    </div>
+  </div>
+  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
+    <div class="social-container">
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    </div>
+    <div class="site-description">
+      暖风熏得游人醉，直把杭州作汴州。
+    </div>
+    <div class="site-footer">
+      网站使用 <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> 花了0.23s 搭建完成 | <a class="rss" href="https://su18.org/atom.xml" target="_blank">RSS</a>
+    </div>
+  </div>
+</div>
+
+
+      <div class="main-container">
+        <div class="content-container" data-aos="fade-up">
+          <div class="post-detail">
+            <h2 class="post-title">Java 反射</h2>
+            <div class="post-date">2019-12-11</div>
+            
+              <div class="feature-container" style="background-image: url('https://su18.org/post-images/A3LjMkeNC.jpg')">
+              </div>
+            
+            <div class="post-content">
+              <h1 id="一-前言">一、前言</h1>
+<p>最近在学习Java编程及安全相关部分，根据<a href="http://p2j.cn">园长</a>发起的项目<a href="https://github.com/anbai-inc/javaweb-sec">javaweb-sec</a>进行学习。</p>
+<p>反射作为 Java 一种十分重要的特性，给与了我们十分灵活的运用方式，本章从零开始学习Java反射，作为个人学习笔记进行发布，截取部分载入 javasec 项目。</p>
+<p>Gitbook地址：<a href="https://javasec.org/">https://javasec.org/</a></p>
+<p>微信交流群：<img src="https://su18.org/post-images/1576829003536.png" alt=""></p>
+<h1 id="二-反射的基本定义">二、反射的基本定义</h1>
+<p>官方文档：<br>
+https://docs.oracle.com/javase/8/docs/technotes/guides/reflection/index.html</p>
+<p>Reflection（反射）赋予了 Java 代码从已加载的类中发现成员变量（Fields）、成员方法（Methods）和构造方法（Constructors）的能力，并可以在安全限制内使用这些反射得到的成员变量、成员方法、构造方法来操作他们对应的底层对象。</p>
+<p>简而言之，你可以在<font color='red'>运行状态中</font>通过反射机制做到：</p>
+<ul>
+<li>对于任意一个类，都能够知道这个类的所有属性和方法；</li>
+<li>对于任意一个对象，都能够调用它的任意一个方法和属性。</li>
+</ul>
+<p>这种动态获取的信息以及动态调用对象的方法的功能称为java语言的反射机制。</p>
+<p>不得不说，反射是一种十分具有 &quot;Hacker&quot; 精神的机制。</p>
+<h1 id="三-反射的基础">三、反射的基础</h1>
+<p>从源代码到程序运行，大致经历的步骤如下：</p>
+<ul>
+<li>创建源文件后，程序会被编译器编译为后缀名为 <code>.class</code> 的文件；</li>
+<li>通过类加载器系统将字节码<code>.class</code>加载入 JVM 的内存中，类的加载是通过 ClassLoader 及其子类来完成的；在加载阶段，虚拟机要完成三件事情：通过一个类的全限定名来获取其定义的二进制字节流，将这个字节流所代表的的静态储存结构转化为方法区的运行时数据结构，在 Java 堆中生成一个代表这个类的 <code>java.lang.Class</code> 对象，作为对方法区中这些数据的访问入口。在加载的过程中将使用双亲委派模型进行类的加载；</li>
+<li>对字节码进行验证；</li>
+<li>解析类、接口、字段，是虚拟机将常量池中的符号引用转化为直接引用的过程；</li>
+<li>类初始化，这里需要注意的是，在使用 <code>Java.lang.reflect</code> 包的方法对类进行反射调用时，如果类还没有进行过初始化，则需要先触发其初始化；</li>
+<li>执行。</li>
+</ul>
+<p>可以看到，在加载的过程中，当一个 class 被加载，或当加载器（classloader）的 <code>defineClass()</code>被 JVM 调用时，JVM 将自动产生一个 Class 对象，并且这个对象会保存在同名的 <code>.class</code> 文件里，当我们 new 一个新对象或者引用一个静态成员变量时，JVM 中的加载器系统会将对应的 Class 对象加载到 JVM 中，然后 JVM 再根据这个类型信息相关的 Class 对象创建我们需要实例对象或者提供静态变量的引用值。</p>
+<p>因此，这些在程序加载过程中产生的类的 Class 对象就是反射的基础。</p>
+<p>Class 类位于包 <code>java.lang</code> 下：</p>
+<pre><code class="language-Java">public final class Class&lt;T&gt; implements java.io.Serializable,GenericDeclaration,Type,AnnotatedElement
+</code></pre>
+<p>可以看到，这是个 final 类，实现了 4 个接口。</p>
+<p>这个类十分特殊，它同样的继承自 Object ，它的实例能用来表达 Java 程序运行时的 classes 和 interfaces，也能用来表达 enum、array、Java 基础类型（boolean、byte、char、short、int、long、double、float）以及关键词 void。</p>
+<p>Class 没有公共构造方法。 Class 对象是在加载类时由 Java 虚拟机以及通过调用类加载器中的 <code>defineClass</code> 方法自动构造的。</p>
+<h1 id="四-获取-class-对象的方法">四、获取 Class 对象的方法</h1>
+<p>通过上面的了解，我们知道，如果想使用反射，必须得获得 Class 对象。</p>
+<p>除了 <code>java.lang.reflect.ReflectPermission</code> 以外，<code>java.lang.reflect</code> 中的其他类都没有 public 的构造函数，也就是说要得到这些类，我们必须通过 Class 。</p>
+<p>下面列举了能够获取 Class 对象的方法：</p>
+<h2 id="1-objectgetclass">1. Object.getClass()</h2>
+<p>第一种方法是通过类的实例来获取对应的 Class 对象。</p>
+<pre><code class="language-Java">byte[] bytes = new byte[1024];
+Class&lt;?&gt; c = bytes.getClass();
+</code></pre>
+<p>但是对于基础数据类型不能使用这种方式。</p>
+<h2 id="2-使用class-语法">2. 使用.Class 语法</h2>
+<p>通过类的类型获取 Class 对象,基本类型同样可以使用这种方法。</p>
+<pre><code class="language-Java">Class&lt;?&gt; c = boolean.class;
+Class&lt;?&gt; c = String.class;
+</code></pre>
+<h2 id="3-classforname">3. Class.forName()</h2>
+<p>通过类的全限定名获取Class对象， 基本类型无法使用此方法。</p>
+<pre><code class="language-Java">try {
+	Class&lt;?&gt; c = Class.forName(&quot;java.lang.String&quot;);
+} catch (ClassNotFoundException e) {
+	e.printStackTrace();
+}
+</code></pre>
+<p>对于数组比较特殊：</p>
+<pre><code class="language-Java">Class&lt;?&gt; doubleArray = Class.forName(&quot;[D&quot;);    //相当于double[].class
+Class&lt;?&gt; cStringArray = Class.forName(&quot;[[Ljava.lang.String;&quot;);   //相当于String[][].class
+</code></pre>
+<p>如果在调用<code>Class.forName()</code>方法时，没有在编译路径下(classpath)找到对应的类，那么将会抛出<code>ClassNotFoundException</code>。</p>
+<h2 id="4-基础类型封装类型-type">4. 基础类型封装类型 TYPE</h2>
+<p>基本类型和 void 类型的包装类可以使用 TYPE 字段获取。</p>
+<pre><code class="language-Java">Class c = Double.TYPE;   //等价于 double.class
+Class c = Void.TYPE;
+</code></pre>
+<h2 id="5-能够返回-class-类型的方法">5. 能够返回 Class 类型的方法</h2>
+<p>另外还有一些反射方法可以获取 Class 对象，但前提是你已经获取了一个 Class 对象。<br>
+比如说你已经获取了一个类的 Class 对象，就可以通过<code>Class.getSuperclass()</code>方法获取这个类的父类的 Class 对象。</p>
+<pre><code class="language-Java">Class&lt;?&gt; c = javax.swing.JButton.class.getSuperclass();
+</code></pre>
+<p>类似能够返回 Class 对象的方法还有：</p>
+<ul>
+<li>Class.getClasses()</li>
+<li>Class.getDeclaredClasses()</li>
+<li>Class.getDeclaringClass()</li>
+<li>Class.getEnclosingClass()</li>
+<li>java.lang.reflect.Field.getDeclaringClass()</li>
+<li>java.lang.reflect.Method.getDeclaringClass()</li>
+<li>java.lang.reflect.Constructor.getDeclaringClass()</li>
+</ul>
+<p>还有部分类能够返回 Class 对象，但基本上都是调用 <code>Class.forName()</code>，此处不再列举。</p>
+<h1 id="五-从-class-中获取信息">五、从 Class 中获取信息</h1>
+<p>在获取了 Class 对象后，就可以通过 Class 类提供的方法来获取其中的信息和进行操作了。</p>
+<h2 id="1-获取类的信息">1. 获取类的信息</h2>
+<table>
+<thead>
+<tr>
+<th>获取内容</th>
+<th>方法签名</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>类名</td>
+<td><code>String getName()</code></td>
+</tr>
+<tr>
+<td>类名简称</td>
+<td><code>String getSimpleName()</code></td>
+</tr>
+<tr>
+<td>规范化类名</td>
+<td><code>String getCanonicalName()</code></td>
+</tr>
+<tr>
+<td>类加载器</td>
+<td><code>ClassLoader getClassLoader()</code></td>
+</tr>
+<tr>
+<td>泛型的参数类型</td>
+<td><code>TypeVariable&lt;Class&lt;T&gt;&gt;[] getTypeParameters()</code></td>
+</tr>
+<tr>
+<td>直接继承的父类</td>
+<td><code>Class&lt;? super T&gt; getSuperclass()</code></td>
+</tr>
+<tr>
+<td>直接继承的父类（包含泛型信息）</td>
+<td><code>Type getGenericSuperclass()</code></td>
+</tr>
+<tr>
+<td>包含的方法</td>
+<td><code>Method getMethod(String name, Class&lt;?&gt;... parameterTypes)</code></td>
+</tr>
+<tr>
+<td>内部类</td>
+<td><code>Class&lt;?&gt;[] getDeclaredClasses()</code></td>
+</tr>
+<tr>
+<td>构造器</td>
+<td><code>Constructor&lt;T&gt; getConstructor(Class&lt;?&gt;... parameterTypes)</code></td>
+</tr>
+<tr>
+<td>包含的属性</td>
+<td><code>Field getField(String name)</code></td>
+</tr>
+<tr>
+<td>修饰符</td>
+<td><code>int getModifiers()</code></td>
+</tr>
+<tr>
+<td>类的标记</td>
+<td><code>Object[] getSigners()</code></td>
+</tr>
+<tr>
+<td>数组的 Class 对象</td>
+<td><code>Class&lt;?&gt; getComponentType()</code></td>
+</tr>
+<tr>
+<td>所在包</td>
+<td><code>Package getPackage()</code></td>
+</tr>
+<tr>
+<td>所实现的接口</td>
+<td><code>Class&lt;?&gt;[] getInterfaces()</code></td>
+</tr>
+<tr>
+<td>所实现的接口（包含泛型信息）</td>
+<td><code>Type[] getGenericInterfaces()</code></td>
+</tr>
+<tr>
+<td>包含的Annotation</td>
+<td><code>&lt;A extends Annotation&gt; A getAnnotation(Class&lt;A&gt; annotationClass)</code></td>
+</tr>
+</tbody>
+</table>
+<p>在 Class 类中，可以看到类似 getEnclosing*、getDeclared* 与 getDeclaringClass，可以理解为在不同”域“中获取信息，由于篇幅的原因不再进行罗列：</p>
+<ul>
+<li>get*：返回当前类和继承层次中的所有父类的成员</li>
+<li>getEnclosing*：返回内部或匿名的封闭成员</li>
+<li>getDeclared*：返回当前类中的成员（不包含父类）</li>
+<li>getDeclaringClass：返回当前类声明所在的类</li>
+</ul>
+<h2 id="2-判断类本身信息的方法">2. 判断类本身信息的方法</h2>
+<p>Class 类提供了一些判断类本身信息的方法，通常命名为 isXxxxx ，返回类型均为 boolean。</p>
+<table>
+<thead>
+<tr>
+<th>判断内容</th>
+<th>方法签名</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>是否为注解类型</td>
+<td><code>boolean isAnnotation()</code></td>
+</tr>
+<tr>
+<td>是否使用了该Annotation修饰</td>
+<td><code>boolean isAnnotationPresent(Class&lt;? extends Annotation&gt; annotationClass)</code></td>
+</tr>
+<tr>
+<td>是否为匿名类</td>
+<td><code>boolean isAnonymousClass()</code></td>
+</tr>
+<tr>
+<td>是否为数组类型</td>
+<td><code>boolean isArray()</code></td>
+</tr>
+<tr>
+<td>是否为枚举类型</td>
+<td><code>boolean isEnum()</code></td>
+</tr>
+<tr>
+<td>判断两个类的是否关联</td>
+<td><code>boolean isAssignableFrom()</code></td>
+</tr>
+<tr>
+<td>是否为接口</td>
+<td><code>boolean isInterface()</code></td>
+</tr>
+<tr>
+<td>obj 是否是该 Class 的实例</td>
+<td><code>boolean isInstance(Object obj)</code></td>
+</tr>
+<tr>
+<td>该类是否为局部类</td>
+<td><code>boolean isLocalClass()</code></td>
+</tr>
+<tr>
+<td>该类是否为成员类</td>
+<td><code>boolean isMemberClass()</code></td>
+</tr>
+<tr>
+<td>是否为基础类型</td>
+<td><code>boolean isPrimitive()</code></td>
+</tr>
+<tr>
+<td>是否由Java编译器引入</td>
+<td><code>boolean isSynthetic()</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-获取构造方法">3. 获取构造方法</h2>
+<p>Class 类提供了四个 public 方法，用于获取某个类的构造方法。</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Constructor getConstructor(Class[] params)</code></td>
+<td>根据构造函数的参数，返回一个具体的具有public属性的构造函数</td>
+</tr>
+<tr>
+<td><code>Constructor getConstructors()</code></td>
+<td>返回所有具有public属性的构造函数数组</td>
+</tr>
+<tr>
+<td><code>Constructor getDeclaredConstructor(Class[] params)</code></td>
+<td>根据构造函数的参数，返回一个具体的构造函数（不分public和非public属性）</td>
+</tr>
+<tr>
+<td><code>Constructor getDeclaredConstructors()</code></td>
+<td>返回该类中所有的构造函数数组（不分public和非public属性）</td>
+</tr>
+</tbody>
+</table>
+<p>如果想要反射出无参数的构造方法，可以直接使用 <code>newInstanse()</code> 方法创建新实例，因为该方法的本质即调用类的无参数构造方法。</p>
+<h2 id="4-获取类的成员方法">4. 获取类的成员方法</h2>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Method getMethod(String name, Class[] params)</code></td>
+<td>根据方法名和参数，返回一个具体的具有public属性的方法</td>
+</tr>
+<tr>
+<td><code>Method[] getMethods()</code></td>
+<td>返回所有具有public属性的方法数组</td>
+</tr>
+<tr>
+<td><code>Method getDeclaredMethod(String name, Class[] params)</code></td>
+<td>根据方法名和参数，返回一个具体的方法（不分public和非public属性）</td>
+</tr>
+<tr>
+<td><code>Method[] getDeclaredMethods()</code></td>
+<td>返回该类中的所有的方法数组（不分public和非public属性）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-获取类的成员属性">5. 获取类的成员属性</h2>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Field getField(String name)</code></td>
+<td>根据变量名，返回一个具体的具有public属性的成员变量</td>
+</tr>
+<tr>
+<td><code>Field[] getFields()</code></td>
+<td>返回具有public属性的成员变量的数组</td>
+</tr>
+<tr>
+<td><code>Field getDeclaredField(String name)</code></td>
+<td>根据变量名，返回一个成员变量（不分public和非public属性）</td>
+</tr>
+<tr>
+<td><code>Field[] getDelcaredFields()</code></td>
+<td>返回所有成员变量组成的数组（不分public和非public属性）</td>
+</tr>
+</tbody>
+</table>
+<p>上面列举的部分方法中还存在部分方法的重载方法，不再赘述，按需使用。</p>
+<h1 id="六-反射操作">六、反射操作</h1>
+<p>能够反射得到类、属性、方法之后，应该如何操作呢？</p>
+<p>首先我们先看反射的包 <code>java.lang.reflect</code> 下的 Member 接口，顾名思义，这是一个标识为成员的接口，这个接口有若干个实现：</p>
+<figure data-type="image" tabindex="1"><img src="https://su18.org/post-images/1576829075037.png" alt=""></figure>
+<p>其中我们首先关注的是：</p>
+<ul>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Field.html"><code>java.lang.reflect.Field</code></a> ：对应类变量。</li>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Method.html"><code>java.lang.reflect.Method</code></a> ：对应类方法。</li>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Constructor.html"><code>java.lang.reflect.Constructor</code></a> ：对应类构造函数。</li>
+</ul>
+<p>反射就是通过这三个类才能在运行时改变对象状态。</p>
+<p>而 Class 对象的 <code>getXXX()</code> 方法返回的成员方法，成员属性，构造方法就是 reflect 包中相对应的类。</p>
+<p>其中 Method 类和 Constructor 类继承自 Executable 类，Executable 类实现了 Member 接口，而 Field 类则直接实现了Member 接口。</p>
+<p>从 JDK 1.8 开始，<code>java.lang.reflect.Executable.getParameters</code> 为我们提供了获取普通方法或者构造方法的名称的能力，因此 Method 类和 Constructor 类也具有这个能力。</p>
+<h2 id="1-field">1.  Field</h2>
+<p>每个成员变量有<strong>类型</strong>和<strong>值</strong>。<code>java.lang.reflect.Field</code> 为我们提供了获取当前对象的成员变量的类型，和重新设值的方法。</p>
+<p>具体方法如下：</p>
+<figure data-type="image" tabindex="2"><img src="https://su18.org/post-images/1576829201425.png" alt=""></figure>
+<p>获取<strong>变量的类型</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Class&lt;?&gt; getType()</code></td>
+<td>返回这个变量的类型</td>
+</tr>
+<tr>
+<td><code>Type getGenericType()</code></td>
+<td>如果当前属性有签名属性就返回，否则返回<code>getType()</code></td>
+</tr>
+</tbody>
+</table>
+<p>这里再复习一下类型，类中的变量分为两种类型：<strong>基本类型</strong>和<strong>引用类型</strong>：</p>
+<ul>
+<li>基本类型（ 8 种）
+<ul>
+<li>整数：byte, short, int, long</li>
+<li>浮点数：float, double</li>
+<li>字符：char</li>
+<li>布尔值：boolean</li>
+</ul>
+</li>
+<li>引用类型
+<ul>
+<li>类，枚举，数组，接口都是引用类型</li>
+<li>java.io.Serializable 接口，基本类型的包装类（比如 <code>java.lang.Double</code>）也是引用类型</li>
+</ul>
+</li>
+</ul>
+<p><strong>获取和修改成员变量的值</strong>：</p>
+<p>拿到一个对象后，我们可以在运行时修改它的成员变量的值，对运行时来说，反射修改变量值的操作和类中修改变量的结果是一样的。</p>
+<p><strong>基本类型</strong>的获取方法：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>byte getByte(Object obj)</code></td>
+<td>获取一个静态或实例 byte 字段的值</td>
+</tr>
+<tr>
+<td><code>int getInt(Object obj)</code></td>
+<td>获取 int 类型或另一个通过扩展转换可以转换为 int 类型的基本类型的静态或实例字段的值</td>
+</tr>
+<tr>
+<td><code>short getShort(Object obj)</code></td>
+<td>获取 short 类型或另一个通过扩展转换可以转换为 short 类型的基本类型的静态或实例字段的值</td>
+</tr>
+<tr>
+<td><code>long getLong(Object obj)</code></td>
+<td>获取 long 类型或另一个通过扩展转换可以转换为 long 类型的基本类型的静态或实例字段的值</td>
+</tr>
+<tr>
+<td><code>float getFloat(Object obj)</code></td>
+<td>获取 float 类型或另一个通过扩展转换可以转换为 float 类型的基本类型的静态或实例字段的值</td>
+</tr>
+<tr>
+<td><code>double getDouble(Object obj)</code></td>
+<td>获取 double 类型或另一个通过扩展转换可以转换为 double 类型的基本类型的静态或实例字段的值</td>
+</tr>
+<tr>
+<td><code>boolean getBoolean(Object obj)</code></td>
+<td>获取一个静态或实例 boolean 字段的值</td>
+</tr>
+<tr>
+<td><code>char getChar(Object obj)</code></td>
+<td>获取 char 类型或另一个通过扩展转换可以转换为 char 类型的基本类型的静态或实例字段的值</td>
+</tr>
+</tbody>
+</table>
+<p><strong>基本类型</strong>的设置方法：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>void setByte(Object obj, byte b)</code></td>
+<td>将字段的值设置为指定对象上的一个 byte 值</td>
+</tr>
+<tr>
+<td><code>void setShort(Object obj, short s)</code></td>
+<td>将字段的值设置为指定对象上的一个 short 值</td>
+</tr>
+<tr>
+<td><code>void setInt(Object obj, int i)</code></td>
+<td>将字段的值设置为指定对象上的一个 int 值</td>
+</tr>
+<tr>
+<td><code>void setLong(Object obj, long l)</code></td>
+<td>将字段的值设置为指定对象上的一个 long 值</td>
+</tr>
+<tr>
+<td><code>void setFloat(Object obj, float f)</code></td>
+<td>将字段的值设置为指定对象上的一个 float 值</td>
+</tr>
+<tr>
+<td><code>void setDouble(Object obj, double d)</code></td>
+<td>将字段的值设置为指定对象上的一个 double 值</td>
+</tr>
+<tr>
+<td><code>void setBoolean(Object obj, boolean z)</code></td>
+<td>将字段的值设置为指定对象上的一个 boolean 值</td>
+</tr>
+<tr>
+<td><code>void setChar(Object obj, char c)</code></td>
+<td>将字段的值设置为指定对象上的一个 char 值</td>
+</tr>
+</tbody>
+</table>
+<p><strong>引用类型</strong>的获取和设置方法：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Object get(Object obj)</code></td>
+<td>返回指定对象上此 Field 表示的字段的值</td>
+</tr>
+<tr>
+<td><code>void set(Object obj, Object value)</code></td>
+<td>将指定对象变量上此 Field 对象表示的字段设置为指定的新值</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-method">2. Method</h2>
+<p>继承的方法（包括重载、重写和隐藏的）会被编译器强制执行，这些方法都无法反射。因此，反射一个类的方法时不考虑父类的方法，只考虑当前类的方法。</p>
+<p>每个方法都由<strong>修饰符</strong>、<strong>返回值</strong>、<strong>参数</strong>、<strong>注解</strong>和<strong>抛出的异常</strong>组成。</p>
+<p><code>java.lang.reflect.Method</code> 方法为我们提供了获取上述部分的 API。</p>
+<figure data-type="image" tabindex="3"><img src="https://su18.org/post-images/1576829270568.png" alt=""></figure>
+<p>重写 Object 类的方法不再描述，重写 Executable 的方法将在后面部分描述，在此只列举一些 Method 类自己的方法。</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Object getDefaultValue()</code></td>
+<td>返回由此方法实例表示的注释成员的默认值</td>
+</tr>
+<tr>
+<td><code>Type getGenericReturnType()</code></td>
+<td>获取目标方法返回类型对应的 Type 对象</td>
+</tr>
+<tr>
+<td><code>Class&lt;?&gt; getReturnType()</code></td>
+<td>获取目标方法返回类型对应的 Class 对象</td>
+</tr>
+<tr>
+<td><code>boolean isBridge()</code></td>
+<td>判断是否是桥接方法</td>
+</tr>
+<tr>
+<td><code>boolean isDefault()</code></td>
+<td>如果此方法是默认方法，则返回 true ; 否则返回 false</td>
+</tr>
+<tr>
+<td><code>Object invoke(Object obj, Object... args)</code></td>
+<td>使用反射执行方法</td>
+</tr>
+</tbody>
+</table>
+<p>首先来看一下 <code>getReturnType()</code> 和 <code>getGenericReturnType()</code> 的异同。</p>
+<ol>
+<li><code>getReturnType()</code>返回类型为 Class，<code>getGenericReturnType()</code>返回类型为 Type ;  Class 实现 Type 。</li>
+<li>返回值为普通简单类型如 Object ,  int , String 等，<code>getGenericReturnType()</code>返回值和<code>getReturnType()</code>一样。<br>
+例如 <code>public String function1()</code><br>
+那么各自返回值为：<br>
+<code>getReturnType() : class java.lang.String</code><br>
+<code>getGenericReturnType() : class java.lang.String</code></li>
+<li>返回值为泛型<br>
+例如<code>public T function2()</code><br>
+那么各自返回值为：<br>
+<code>getReturnType() : class java.lang.Object</code><br>
+<code>getGenericReturnType() : T</code></li>
+<li>返回值为参数化类型<br>
+例如<code>public Class function3()</code><br>
+那么各自返回值为：<br>
+<code>getReturnType() : class java.lang.Class</code><br>
+<code>getGenericReturnType() : java.lang.Class</code></li>
+</ol>
+<p>其实反射中所有形如<code>getGenericXXX()</code>的方法规则都与上面所述类似。</p>
+<p>然后就是非常重要的<code>invoke()</code>方法，</p>
+<pre><code class="language-Java">public Object invoke(Object obj, Object... args)
+        throws IllegalAccessException, IllegalArgumentException,
+           InvocationTargetException
+</code></pre>
+<p>第一个 Object 参数代表的是对应的 Class 对象实例，第二个参数是可变形参，能够接受多个参数。</p>
+<p>这里需要注意的是，invoke 方法的两个参数均为<font color='red'> Object </font>类型。</p>
+<p>简单来说，通过 <code>invoke()</code> 方法可以让我们调用反射得到的类的方法。那么具体是怎么实现的呢？</p>
+<p>invoke过程图解：</p>
+<figure data-type="image" tabindex="4"><img src="https://su18.org/post-images/1576829311976.png" alt=""></figure>
+<p>此处不进行过多描述，有兴趣可以跟一下源码。</p>
+<h2 id="3-constructor">3. Constructor</h2>
+<p>同样地，我们也只列举 Constructor 自己的 public 方法：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>T newInstance(Object ... initargs)</code></td>
+<td>调用构造方法创建新实例</td>
+</tr>
+</tbody>
+</table>
+<p>方法使用此 Constructor 对象表示的构造函数，使用指定的初始化参数来创建和初始化构造函数的声明类的新实例。个别参数自动展开以匹配原始形式参数，原始参考参数和参考参数都需要进行方法调用转换。</p>
+<p>通过 Class 对象也可以创建新实例，但是两者的异同在于：</p>
+<ul>
+<li><code>Class.newInstance()</code>只能反射无参数的构造器，也就是使用无参数构造方法创建新实例，而 <code>Constructor.newInstance()</code>可以反射任何构造器；</li>
+<li><code>Class.newInstance()</code> 需要构造器可见(visible)，<code>Constructor.newInstance()</code>可以反射私有构造器；</li>
+<li><code>Class.newInstance()</code>对于捕获或者未捕获的异常均由构造器抛出，<code>Constructor.newInstance()</code>通常会把抛出的异常封装成<code>InvocationTargetException</code>抛出；</li>
+</ul>
+<p>因此，还是建议直接使用 <code>Constructor.newInstance()</code> 反射构造方法，几乎全部的框架都是使用此种模式进行反射的。</p>
+<h2 id="4-executable">4. Executable</h2>
+<p>Executable 抽象类继承 AccessibleObject 类，实现了 Member 接口，并有两个子类分别为 Constructor 和 Method，如下：</p>
+<figure data-type="image" tabindex="5"><img src="https://su18.org/post-images/1576829384287.png" alt=""></figure>
+<p>该类中定义了多个方法，能够在通过反射获得的成员方法或构造方法中使用：</p>
+<figure data-type="image" tabindex="6"><img src="https://su18.org/post-images/1576829418123.png" alt=""></figure>
+<p>该抽象类声明的方法有：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Class&lt;?&gt;[] getParameterTypes()</code></td>
+<td>按照声明顺序返回 Class 对象的数组，这些对象描述了此 Method/Constructor 对象所表示的方法的形参类型。</td>
+</tr>
+<tr>
+<td><code>Class&lt;?&gt;[] getExceptionTypes()</code></td>
+<td>返回 Class 对象的数组，这些对象描述了声明将此 Method/Constructor 对象表示的底层方法抛出的异常类型。</td>
+</tr>
+<tr>
+<td><code>Type[] getGenericParameterTypes()</code></td>
+<td>按照声明顺序返回 Type 对象的数组，这些对象描述了此 Method/Constructor 对象所表示的形参类型的。</td>
+</tr>
+<tr>
+<td><code>Type[] getGenericExceptionTypes()</code></td>
+<td>返回 Type 对象数组，这些对象描述了声明由此 Method/Constructor 对象抛出的异常的类型。</td>
+</tr>
+<tr>
+<td><code>String toGenericString()</code></td>
+<td>返回描述此 Method/Constructor 的字符串，包括类型参数。</td>
+</tr>
+<tr>
+<td><code>Annotation[][] getParameterAnnotations()</code></td>
+<td>返回表示按照声明顺序对此 Method/Constructor 对象所表示方法的形参进行注释的那个数组的数组。</td>
+</tr>
+<tr>
+<td><code>AnnotatedType getAnnotatedReturnType()</code></td>
+<td>返回一个AnnotatedType对象，该对象表示使用一个类型来指定由该可执行文件表示的方法/构造函数的返回类型</td>
+</tr>
+<tr>
+<td><code>Type[] getGenericExceptionTypes()</code></td>
+<td>返回一个AnnotatedType对象数组，这些对象表示使用类型来指定由该可执行文件表示的方法/构造函数声明的异常</td>
+</tr>
+<tr>
+<td><code>AnnotatedType getAnnotatedReceiverType()</code></td>
+<td>返回一个AnnotatedType对象，该对象表示使用一个类型来指定该可执行对象表示的方法/构造函数的接收者类型</td>
+</tr>
+<tr>
+<td><code>AnnotatedType[] getAnnotatedParameterTypes()</code></td>
+<td>返回一个AnnotatedType对象数组，这些对象表示使用类型来指定由该可执行文件表示的方法/构造函数的形式参数类型</td>
+</tr>
+<tr>
+<td><code>int getParameterCount()</code></td>
+<td>获取参数的个数（无论是显式声明的还是隐式声明的或不声明的</td>
+</tr>
+<tr>
+<td><code>Parameter[] getParameters()</code></td>
+<td>返回一个参数对象数组，该数组表示该方法对象的所有参数</td>
+</tr>
+<tr>
+<td><code>boolean isVarArgs()</code></td>
+<td>是否是可变参数</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-accessibleobject">5. AccessibleObject</h2>
+<p>在 <code>java.lang.reflect</code> 包中，存在一个 AccessibleObject 类，细心的同学已经发现了，该类是Method、Field、Constructor 类的基类，它提供了标记反射对象的能力，以抑制在使用时使用默认 Java 语言访问控制检查，从而能够任意调用被私有化保护的方法、域和构造函数。</p>
+<p>此类实现了 AnnotatedElement 接口，主要是注解相关的操作。</p>
+<figure data-type="image" tabindex="7"><img src="https://su18.org/post-images/1576829477349.png" alt=""></figure>
+<p>声明的方法：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>boolean isAccessible()</code></td>
+<td>获取此对象的accessible标志的值（布尔类型）</td>
+</tr>
+<tr>
+<td><code>void setAccessible(AccessibleObject[] array, boolean flag)</code></td>
+<td>使用单一安全检查来设置对象数组的可访问标志的一个方便的方法（为了效率），静态方法</td>
+</tr>
+<tr>
+<td><code>void setAccessible(boolean flag)</code></td>
+<td>将对象的可访问标志设置为指示的布尔值</td>
+</tr>
+</tbody>
+</table>
+<p>通过调用 <code>setAccessible()</code> 方法会关闭反射访问检查，这行代码执行之后不论是私有的、受保护的以及包访问的作用域，你都可以在任何地方访问，即使你不在他的访问权限作用域之内。</p>
+<ul>
+<li>当<code>isAccessible()</code>的结果是 false 时不允许通过反射访问该字段；</li>
+<li>当该字段时 private 修饰时<code>isAccessible()</code>得到的值是 false ，必须要改成 true 才可以访问；</li>
+<li>所以 <code>f.setAccessible(true)</code>得作用就是让我们在用反射时访问私有变量。</li>
+</ul>
+<p>所以你其实并不是把 private 方法改成了 public ，也没有更改任何的权限，你只是关闭了反射访问的检查，这种情况下，其实可以导致一些效率上的提升，与此同时带来的就是安全性的下降。</p>
+<h2 id="6-annotatedelement">6. AnnotatedElement</h2>
+<p>此接口位于包 <code>java.lang.reflect</code> 下。</p>
+<p>这个接口的对象代表了在当前 JVM 中的一个“被注解元素”。在 Java 语言中，所有实现了这个接口的“元素”都是可以“被注解的元素”。</p>
+<p>使用这个接口中声明的方法可以读取（通过 Java 的反射机制）“被注解元素”的注解。</p>
+<p><font color='red'>这个接口中的所有方法返回的注解都是不可变的、并且都是可序列化的。</font>这个接口中所有方法返回的数组可以被调用者修改，而不会影响其返回给其他调用者的数组。</p>
+<p>此类具有以下的实现类：</p>
+<ul>
+<li>AccessibleObject（可访问对象，如：方法、构造器、属性等）</li>
+<li>Class</li>
+<li>Constructor</li>
+<li>Executable（可执行的，如构造器和方法）</li>
+<li>Field（属性，类中属性的类型）</li>
+<li>Method（方法，类中方法的类型）</li>
+<li>Package（包）</li>
+<li>Parameter（参数，主要指方法或函数的参数，其实是这些参数的类型）</li>
+</ul>
+<p>接口声明的方法有：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>boolean isAnnotationPresent(Class&lt;? extends Annotation&gt; annotationClass)</code></td>
+<td>如果指定类型的注解出现在当前元素上，则返回 true ，否则将返回false。这种方法主要是为了方便地访问一些已知的注解。</td>
+</tr>
+<tr>
+<td><code>&lt;T extends Annotation&gt; T getAnnotation(Class&lt;T&gt; annotationClass)</code></td>
+<td>如果在当前元素上存在参数所指定类型（annotationClass）的注解，则返回对应的注解，否则将返回 null 。</td>
+</tr>
+<tr>
+<td><code>Annotation[] getAnnotations()</code></td>
+<td>返回在这个元素上的所有注解。如果该元素没有注释，则返回值是长度为0的数组。该方法的调用者可以自由地修改返回的数组;它不会对返回给其他调用者的数组产生影响。</td>
+</tr>
+<tr>
+<td><code>&lt;T extends Annotation&gt; T[] getAnnotationsByType(Class&lt;T&gt; annotationClass)</code></td>
+<td>返回与该元素相关联的注解。如果没有与此元素相关联的注解，则返回值是长度为0的数组。这个方法与<code>getAnnotation(Class)</code>的区别在于，该方法检测其参数是否为可重复的注解类型( JLS 9.6 )，如果是，则尝试通过“ looking through ”容器注解来查找该类型的一个或多个注解。该方法的调用者可以自由地修改返回的数组；它不会对返回给其他调用者的数组产生影响。</td>
+</tr>
+<tr>
+<td><code>&lt;T extends Annotation&gt; T getDeclaredAnnotation(Class&lt;T&gt; annotationClass)</code></td>
+<td>如果参数中所指定类型的注解是直接存在于当前元素上的，则返回对应的注解，否则将返回null。这个方法忽略了继承的注解。(如果没有直接在此元素上显示注释，则返回null。)</td>
+</tr>
+<tr>
+<td><code>&lt;T extends Annotation&gt; T[] getDeclaredAnnotationsByType(Class&lt;T&gt; annotationClass)</code></td>
+<td>如果参数中所指定类型的注解是直接存在或间接存在于当前元素上的，则返回对应的注解。这种方法忽略了继承的注解。如果没有直接或间接地存在于此元素上的指定注解，则返回值是长度为0的数组。这个方法和<code>getDeclaredAnnotation(Class)</code>的区别在于，这个方法检测它的参数是否为可重复的注释类型( JLS 9.6 )，如果是，则尝试通过“ looking through ”容器注解来查找该类型的一个或多个注解。该方法的调用者可以自由地修改返回的数组;它不会对返回给其他调用者的数组产生影响。</td>
+</tr>
+<tr>
+<td><code>Annotation[] getDeclaredAnnotations()</code></td>
+<td>返回直接出现在这个元素上的注解。这种方法忽略了继承的注解。如果在此元素上没有直接存在的注解，则返回值是长度为0的数组。该方法的调用者可以自由地修改返回的数组；它不会对返回给其他调用者的数组产生影响。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-member">7. Member</h2>
+<p>Member 接口标识类或接口的所有公共成员的集合，包括继承的成员。Constructor / Filed / Method 类都直接或间接的继承此类。</p>
+<p>Member 接口中定义的方法为：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Class&lt;?&gt; getDeclaringClass()</code></td>
+<td>返回表示该类或接口的 Class 对象</td>
+</tr>
+<tr>
+<td><code>String getName()</code></td>
+<td>返回此成员表示的基础成员或构造函数的简单名称</td>
+</tr>
+<tr>
+<td><code>int getModifiers()</code></td>
+<td>以整数形式返回此成员表示的成员或构造函数的 Java 语言修饰符</td>
+</tr>
+<tr>
+<td><code>boolean isSynthetic()</code></td>
+<td>是否由 Java 编译器引入</td>
+</tr>
+</tbody>
+</table>
+<h2 id="8-反射操作总结">8. 反射操作总结</h2>
+<p>通过以上知识的学习，可以知道：</p>
+<ul>
+<li><font color='blue'>AnnotatedElement</font> 接口提供获取注解相关能力。</li>
+<li><font color='blue'>Member</font> 接口提供通用成员属性获取能力。</li>
+<li><font color='blue'>GenericDeclaration</font> 接口提供给 Class 获取泛型类型的能力。</li>
+<li><font color='blue'>Executable</font>  抽象类提供获取可执行对象相关信息的能力。</li>
+<li><font color='blue'>AccessibleObject</font> 抽象类提供判断可更改可访问标识的能力。</li>
+<li><font color='blue'>Constructor、Method、Field</font>各自基础或实现上述接口和抽象类，赋予了他们获取相关信息的能力。</li>
+</ul>
+<p>以上类或接口之间的关系为：</p>
+<figure data-type="image" tabindex="8"><img src="https://su18.org/post-images/1576829517523.png" alt=""></figure>
+<h2 id="9-数组和枚举">9. 数组和枚举</h2>
+<p>数组和枚举也是对象，但是在反射中，对数组和枚举的创建、访问和普通对象有些不同，所以 Java 反射为数组和枚举提供了一些特定的API接口。</p>
+<h3 id="数组">数组</h3>
+<p><strong>数组类型</strong><br>
+数组类型：数组本质是一个对象，所以它也有自己的类型。例如对于<code>int[] intArray</code>，数组类型为<code>class [I</code>。数组类型中的<code>[</code>个数代表数组的维度，例如<code>[</code>代表一维数组，<code>[[</code>代表二维数组；<code>[</code>后面的字母代表数组元素类型，<code>I</code>代表<code>int</code>，一般为类型的首字母大写( long 类型例外，为 J )。</p>
+<pre><code class="language-Java">class [B    //byte类型一维数组
+class [S    //short类型一维数组
+class [I    //int类型一维数组
+class [C    //char类型一维数组
+class [J    //long类型一维数组，J代表long类型，因为L被引用对象类型占用了
+class [F    //float类型一维数组
+class [D    //double类型一维数组
+class [Lcom.dada.Season    //引用类型一维数组
+class [[Ljava.lang.String  //引用类型二维数组
+</code></pre>
+<pre><code class="language-Java">//获取一个变量的类型
+Class&lt;?&gt; c = field.getType();
+//判断该变量是否为数组
+if (c.isArray()) {
+   //获取数组的元素类型
+   c.getComponentType()
+}
+</code></pre>
+<p><strong>创建和初始化数组</strong></p>
+<p>Java反射为我们提供了<code>java.lang.reflect.Array</code>类用来创建和初始化数组。</p>
+<pre><code class="language-Java">//创建数组， 参数componentType为数组元素的类型，后面不定项参数的个数代表数组的维度，参数值为数组长度
+Array.newInstance(Class&lt;?&gt; componentType, int... dimensions)
+
+//设置数组值，array为数组对象，index为数组的下标，value为需要设置的值
+Array.set(Object array, int index, int value)
+
+//获取数组的值，array为数组对象，index为数组的下标
+Array.get(Object array, int index)
+</code></pre>
+<p>例子，用反射创建 <code>int[] array = new int[]{1, 2}</code></p>
+<pre><code class="language-Java">Object array = Array.newInstance(int.class, 2);
+Array.setInt(array , 0, 1);
+Array.setInt(array , 1, 2);
+</code></pre>
+<blockquote>
+<p>注意：反射支持对数据自动加宽，但不允许数据<code>narrowing</code>(变窄?真难翻译)。意思是对于上述set方法，你可以在int类型数组中 set short类型数据，但不可以set long类型数据，否则会报<code>IllegalArgumentException</code>。</p>
+</blockquote>
+<p><strong>多维数组</strong></p>
+<p>Java反射没有提供能够直接访问多维数组元素的API，但你可以把多维数组当成数组的数组处理。</p>
+<pre><code class="language-Java">Object matrix = Array.newInstance(int.class, 2, 2);
+Object row0 = Array.get(matrix, 0);
+Object row1 = Array.get(matrix, 1);
+
+Array.setInt(row0, 0, 1);
+Array.setInt(row0, 1, 2);
+Array.setInt(row1, 0, 3);
+Array.setInt(row1, 1, 4);
+</code></pre>
+<p>或者</p>
+<pre><code class="language-Java">Object matrix = Array.newInstance(int.class, 2);
+Object row0 = Array.newInstance(int.class, 2);
+Object row1 = Array.newInstance(int.class, 2);
+
+Array.setInt(row0, 0, 1);
+Array.setInt(row0, 1, 2);
+Array.setInt(row1, 0, 3);
+Array.setInt(row1, 1, 4);
+
+Array.set(matrix, 0, row0);
+Array.set(matrix, 1, row1);
+</code></pre>
+<h3 id="枚举">枚举</h3>
+<p>枚举隐式继承自<code>java.lang.Enum</code>，Enum继承自Object，所以枚举本质也是一个类，也可以有成员变量，构造方法，方法等；对于普通类所能使用的反射方法，枚举都能使用；另外java反射额外提供了几个方法为枚举服务。</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Class.isEnum()</code></td>
+<td>此类是否为枚举类型</td>
+</tr>
+<tr>
+<td><code>Class.getEnumConstants()</code></td>
+<td>返回按照声明顺序索引由枚举类型定义的枚举常量的列表</td>
+</tr>
+<tr>
+<td><code>java.lang.reflect.Field.isEnumConstant()</code></td>
+<td>此字段是否表示枚举类型的元素</td>
+</tr>
+</tbody>
+</table>
+<h2 id="10-常见异常">10. 常见异常</h2>
+<h3 id="1-nosuchmethodexception">① NoSuchMethodException</h3>
+<p>造成这种异常的可能有：</p>
+<ul>
+<li>方法本身不存在</li>
+<li>传入的参数类型不匹配（也可能是泛型擦除导致）</li>
+<li>传入的参数个数不匹配</li>
+</ul>
+<p>反射调用泛型方法时，由于运行前编译器已经把泛型擦除，参数类型会被擦除为上边界（默认 Object）。</p>
+<p>此时再试图传入特定类型的参数会导致<code>NoSuchMethodException</code>异常。</p>
+<p>解决的方式是使用 Object 作为参数类型即可。</p>
+<h3 id="2-illegalaccessexception">② IllegalAccessException</h3>
+<p>当你访问 private 的方法或者 private 的类中的方法，会抛出<code>IllegalAccessException</code>异常。</p>
+<p>也有可能是试图操作 final 修饰的 Field 导致。</p>
+<p>解决方法就是给该 method 设置 <code>setAccessible(true)</code>。</p>
+<h3 id="3-llegalargumentexception">③ llegalArgumentException</h3>
+<p>如果一个方法没有参数，但是我们反射时传入参数，就会导致 <code>llegalArgumentException</code>。</p>
+<h3 id="4-invocationtargetexception">④ InvocationTargetException</h3>
+<p>被调用的方法本身所抛出的异常在反射中都会以 <code>InvocationTargetException</code>抛出。</p>
+<p>换句话说，反射调用过程中如果异常 <code>InvocationTargetException</code>抛出，说明反射调用本身是成功的，因为这个异常是目标方法本身所抛出的异常。</p>
+<p>通过调用 <code>InvocationTargetException</code> 对象的 <code>getCause()</code> 方法，会得到 Throwable 对象，原始的异常就包含在里面。</p>
+<h3 id="5-classnotfoundexception">⑤ ClassNotFoundException</h3>
+<p><code>Class.forName()</code>传入的包名有误，或 Class 本身不存在。将会引发此异常。</p>
+<h3 id="6-nosuchfieldexception">⑥ NoSuchFieldException</h3>
+<p>Field 名称不正确，或对 <code>getField()</code> 和 <code>getDeclaredField()</code> 的使用不正确将会引发此异常。</p>
+<h3 id="7-instantiationexception">⑦ InstantiationException</h3>
+<p>实例化出错，可能是 <code>Class.newInstance()</code> 或者 <code>Constructor.newInstance()</code> 出现了异常。</p>
+<h1 id="七-简单使用反射">七、简单使用反射</h1>
+<p>我们了解的反射的基本情况，能够获取 Class 对象，又能从 Class 中获取相应的信息，记下来记录如何使用反射。</p>
+<h2 id="1-创建类对象">1. 创建类对象</h2>
+<p>通过反射创建类对象主要有两种方式：通过 Class 对象的 <code>newInstance()</code> 方法，或通过 Constructor 对象的 <code>newInstance()</code> 方法。前面提到过， <code>newInstanse()</code> 方法就是调用无参数的构造方法。</p>
+<p>第一种：Class 对象的 <code>newInstance()</code> 方法。</p>
+<pre><code class="language-Java">Class clz = Apple.class;
+Apple apple = (Apple)clz.newInstance();
+</code></pre>
+<p>第二种：Constructor 对象的 <code>newInstance()</code> 方法。</p>
+<pre><code class="language-Java">Class clz = Apple.class;
+Constructor constructor = clz.getConstructor();
+Apple apple = (Apple)constructor.newInstance();
+</code></pre>
+<p>通过 Constructor 对象创建类对象可以选择特定构造方法，而通过 Class 对象则只能使用默认的无参数构造方法。下面的代码就调用了一个有参数的构造方法进行了类对象的初始化。</p>
+<pre><code class="language-Java">Class clz = Apple.class;
+Constructor constructor = clz.getConstructor(String.class, int.class);
+Apple apple = (Apple)constructor.newInstance(&quot;红富士&quot;, 15);
+</code></pre>
+<h2 id="2-获取属性">2. 获取属性</h2>
+<p>下面例子展示了使用 <code>getDeclaredFields()</code> 获取全部属性：</p>
+<pre><code class="language-Java">Class clz = Apple.class;
+Field[] fields = clz.getDeclaredFields();
+for (Field field : fields) {
+    System.out.println(field.getName());
+}
+</code></pre>
+<h2 id="3-调用方法">3. 调用方法</h2>
+<pre><code class="language-Java">package org.su18;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+public class Reflection {
+
+
+	public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+//		Class&lt;?&gt; testClass = TestReflection.class;
+		Class&lt;?&gt; testClass     = Class.forName(&quot;org.su18.TestReflection&quot;);
+		Method   funTwoReflect = testClass.getDeclaredMethod(&quot;funTwo&quot;, String.class, String.class, String.class);
+		funTwoReflect.setAccessible(true);
+		funTwoReflect.invoke(null, &quot;Kiki&quot;, &quot;Pants&quot;, &quot;Dance&quot;);
+
+		System.out.println(&quot;\n&quot;);
+
+		Method funOneReflect = testClass.getDeclaredMethod(&quot;funOne&quot;);
+		funOneReflect.invoke(null);
+
+		System.out.println(&quot;\n&quot;);
+
+		Method funThreeReflect = testClass.getDeclaredMethod(&quot;funThree&quot;, Integer[].class);
+		funThreeReflect.setAccessible(true);
+		Integer[] nums = {1,2,3,4,5,6,123,141};
+		int result = (int) funThreeReflect.invoke(new TestReflection(), (Object) nums);
+		System.out.println(result);
+	}
+}
+
+
+class TestReflection {
+
+	static void funOne() {
+		System.out.println(&quot;Let's dance&quot;);
+	}
+
+
+	private static void funTwo(String name, String clothes, String action) {
+		System.out.printf(&quot;The First Man Name Is %s .\n&quot;, name);
+		System.out.printf(&quot;He Wears Such Little %s .\n&quot;, clothes);
+		System.out.print(&quot;His Brother Was A Champion .\n&quot;);
+		System.out.printf(&quot;But %s Loves To  %s .\n&quot;, name, action);
+	}
+
+	private int funThree(Integer... numbers) {
+		int sum = 0;
+		for (Integer number : numbers) {
+			sum += number;
+		}
+		return sum;
+	}
+
+}
+</code></pre>
+<p>上例演示了在各种不同情况下调用的方式的不同结果如下：</p>
+<figure data-type="image" tabindex="9"><img src="https://su18.org/post-images/1576831195372.png" alt=""></figure>
+<h2 id="4-调用内部类">4. 调用内部类</h2>
+<p>假设<code>com.reflect.Outer</code>类，有一个内部类 inner 和静态内部类 StaticInner 。 那么静态内部类的构造函数为<code>Outer$StaticInner();</code> 而普通内部类的构造函数为<code>Outer$Inner(Outer outer)</code>，多了一个 final 的 Outer 类型属性，即<code>Outer$Inner.this$0</code>，用于存储外部类的属性值，也就是说非static内部类保持了外部类的引用。</p>
+<p>直接实例化内部类方法如下：</p>
+<pre><code class="language-Java">// 静态内部类
+Outer.StaticInner sInner = new Outer.StaticInner();
+// 非静态内部类
+Outer.Inner inner = new Outer().new Inner();
+</code></pre>
+<p>内部类的类名使用采用 $ 符号，来连接外部类与内部类，格式为<code>outer$Inner</code>。</p>
+<pre><code class="language-Java">String className = &quot;com.reflect.Outer$Inner&quot;;
+    Class.forName(className);
+</code></pre>
+<p>除了格式了差异，关于内部类的属性和方法操作基本相似，下面以调用该静态类的静态方法为例：</p>
+<pre><code class="language-Java">public static Object invokeMethod(String methodName, Class[] argsType, Object... args) {
+    Class clazz = Class.forName(&quot;com.reflect.Outer$StaticInner&quot;);
+    Method method = clazz.getDeclaredMethod(methodName, argsType);
+    method.setAccessible(true);  
+    return method.invoke(null, args);
+</code></pre>
+<h1 id="八-反射的作用">八、反射的作用</h1>
+<p>有了如此强大的反射特性，我们可以进行：</p>
+<ul>
+<li>为所欲为：理论上可以访问任意类任意方法任意成员变量，这一步能做的就很多，直接调用某些类的方法、在运行中获取某些类的某些成员变量、通过获取注解对web框架获取到类和地址的映射关系等等。</li>
+<li>框架实现：大部分的框架基本都是基于反射实现的。</li>
+<li>防护绕过：针对 RASP 技术防护的站，可以反射调用底层方法进行封装，来绕过一些拦截位置。</li>
+</ul>
+<p>还有诸多作用等着大家发掘吧~</p>
+<h1 id="九-反射的缺点">九、反射的缺点</h1>
+<ul>
+<li>
+<p>性能开销<br>
+反射涉及类型动态解析，所以 JVM 无法对这些代码进行优化。因此，反射操作的效率要比那些非反射操作低得多。我们应该避免在经常被执行的代码或对性能要求很高的程序中使用反射。</p>
+</li>
+<li>
+<p>安全限制<br>
+使用反射技术要求程序必须在一个没有安全限制的环境中运行。如果一个程序必须在有安全限制的环境中运行，如 Applet，那么这就是个问题了。</p>
+</li>
+<li>
+<p>内部曝光<br>
+由于反射允许代码执行一些在正常情况下不被允许的操作（比如访问私有的属性和方法），所以使用反射可能会导致意料之外的副作用－－代码有功能上的错误，降低可移植性。反射代码破坏了抽象性，因此当平台发生改变的时候，代码的行为就有可能也随着变化。</p>
+</li>
+</ul>
+<p>虽然大家都在说反射性能低，是因为无法通过 JIT 进行优化，但现在的 JDK 已经非常强悍了，并不至于因为性能开销大而无法使用强大的反射功能。</p>
+
+            </div>
+            
+              <div class="tag-container">
+                
+                  <a href="https://su18.org/tag/f16FB3h4R" class="tag">
+                    Java
+                  </a>
+                
+                  <a href="https://su18.org/tag/BzxskQbtKl" class="tag">
+                    反射
+                  </a>
+                
+                  <a href="https://su18.org/tag/bbwakgnJvv" class="tag">
+                    学习笔记
+                  </a>
+                
+              </div>
+            
+            
+              <div class="next-post">
+                <div class="next">下一篇</div>
+                <a href="https://su18.org/post/EiNzuduRG">
+                  <h3 class="post-title">
+                    中国特色PHP大马
+                  </h3>
+                </a>
+              </div>
+            
+
+            
+              
+                <div id="gitalk-container" data-aos="fade-in"></div>
+              
+
+              
+            
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+
+<script type="application/javascript">
+
+AOS.init();
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+  
+    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+    <script>
+
+      var gitalk = new Gitalk({
+        clientID: 'f7b59be97fcefada5030',
+        clientSecret: 'dfbf7baf0b69544dbf1bc8c904338e31280cea7f',
+        repo: 'blogtalk',
+        owner: 'JosephTribbianni',
+        admin: ['JosephTribbianni'],
+        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+        distractionFreeMode: false  // Facebook-like distraction free mode
+      })
+
+      gitalk.render('gitalk-container')
+
+    </script>
+  
+
+  
+
+
+
+
+  </body>
+</html>
