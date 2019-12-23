@@ -1,182 +1,211 @@
-<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8" >
-
+  <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>学习笔记 | 素十八</title>
-<meta name="description" content="暖风熏得游人醉，直把杭州作汴州。">
-
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-
+<meta name="description" content="暖风熏得游人醉，直把杭州作汴州。" />
+<link rel="shortcut icon" href="https://su18.org/favicon.ico?v=1577072065949">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://su18.org/favicon.ico?v=1577071217165">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://su18.org/styles/main.css">
 
-
-
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
 
-<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
-
-
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-154954923-1"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'UA-154954923-1');
-</script>
 
 
   </head>
   <body>
-    <div id="app" class="main">
-
-      <div class="sidebar" :class="{ 'full-height': menuVisible }">
-  <div class="top-container" data-aos="fade-right">
-    <div class="top-header-container">
-      <a class="site-title-container" href="https://su18.org">
-        <img src="https://su18.org/images/avatar.png?v=1577071217165" class="site-logo">
-        <h1 class="site-title">素十八</h1>
-      </a>
-      <div class="menu-btn" @click="menuVisible = !menuVisible">
-        <div class="line"></div>
-      </div>
-    </div>
-    <div>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://su18.org">
+  <img class="avatar" src="https://su18.org/images/avatar.png?v=1577072065949" alt="">
+  </a>
+  <h1 class="site-title">
+    素十八
+  </h1>
+  <p class="site-description">
+    暖风熏得游人醉，直把杭州作汴州。
+  </p>
+  <div class="menu-container">
+    
       
-        
-          <a href="/" class="site-nav">
-            首页
-          </a>
-        
+        <a href="/" class="menu">
+          首页
+        </a>
       
-        
-          <a href="/archives" class="site-nav">
-            归档
-          </a>
-        
+    
       
-        
-          <a href="/tags" class="site-nav">
-            标签
-          </a>
-        
+        <a href="/archives" class="menu">
+          归档
+        </a>
       
-        
-          <a href="http://2017.su18.org" class="site-nav" target="_blank">
-            2017
-          </a>
-        
+    
       
-        
-          <a href="http://2018.su18.org" class="site-nav" target="_blank">
-            2018
-          </a>
-        
+        <a href="/tags" class="menu">
+          标签
+        </a>
       
-    </div>
+    
+      
+        <a href="http://2017.su18.org" class="menu" target="_blank">
+          2017
+        </a>
+      
+    
+      
+        <a href="http://2018.su18.org" class="menu" target="_blank">
+          2018
+        </a>
+      
+    
   </div>
-  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
-    <div class="social-container">
+  <div class="social-container">
+    
       
-        
+    
       
-        
+    
       
-        
+    
       
-        
+    
       
-        
-      
-    </div>
-    <div class="site-description">
-      暖风熏得游人醉，直把杭州作汴州。
-    </div>
-    <div class="site-footer">
-      网站使用 <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> 花了0.23s 搭建完成 | <a class="rss" href="https://su18.org/atom.xml" target="_blank">RSS</a>
-    </div>
+    
   </div>
 </div>
 
-
-      <div class="main-container">
-        <div class="content-container" data-aos="fade-up">
-          <h2 class="current-tag">标签: 学习笔记</h2>
-          
-            <article class="post-item">
-              <div class="left">
-                <a href="https://su18.org/post/A3LjMkeNC">
-                  <h2 class="post-title">Java 反射</h2>
-                </a>
-                <div class="post-date">
-                  2019-12-11
-                </div>
-                <div class="post-abstract">
-                  
-                </div>
-              </div>
-              
-                <a class="right" href="https://su18.org/post/A3LjMkeNC">
-                  <div class="feature-container" style="background-image: url('https://su18.org/post-images/A3LjMkeNC.jpg')">
-                  </div>
-                </a>
-              
-            </article>
-          
-            <article class="post-item">
-              <div class="left">
-                <a href="https://su18.org/post/EiNzuduRG">
-                  <h2 class="post-title">中国特色PHP大马</h2>
-                </a>
-                <div class="post-date">
-                  2019-11-01
-                </div>
-                <div class="post-abstract">
-                  
-                </div>
-              </div>
-              
-                <a class="right" href="https://su18.org/post/EiNzuduRG">
-                  <div class="feature-container" style="background-image: url('https://su18.org/post-images/EiNzuduRG.jpg')">
-                  </div>
-                </a>
-              
-            </article>
-          
-
-          <div class="pagination-container">
-  
-  
-</div>
-
+        <div class="current-tag-container">
+            <h2 class="title">
+                标签：# 学习笔记
+            </h2> 
         </div>
+        <div class="post-container">
+  
+    <article class="post">
+      <a href="https://su18.org/post/A3LjMkeNC">
+        <h2 class="post-title">Java 反射</h2>
+      </a>
+      <div class="post-info">
+        <span>
+          2019-12-11
+        </span>
+        <span>
+          35 min read
+        </span>
+        
+          <a href="https://su18.org/tag/f16FB3h4R" class="post-tag">
+            # Java
+          </a>
+        
+          <a href="https://su18.org/tag/BzxskQbtKl" class="post-tag">
+            # 反射
+          </a>
+        
+          <a href="https://su18.org/tag/bbwakgnJvv" class="post-tag">
+            # 学习笔记
+          </a>
+        
       </div>
-    </div>
+      
+        <a href="https://su18.org/post/A3LjMkeNC" class="post-feature-image" style="background-image: url('https://su18.org/post-images/A3LjMkeNC.jpg')">
+        </a>
+      
+      <div class="post-abstract">
+        
+      </di>
+    </article>
+  
+    <article class="post">
+      <a href="https://su18.org/post/EiNzuduRG">
+        <h2 class="post-title">中国特色PHP大马</h2>
+      </a>
+      <div class="post-info">
+        <span>
+          2019-11-01
+        </span>
+        <span>
+          39 min read
+        </span>
+        
+          <a href="https://su18.org/tag/pPj3ux0XY" class="post-tag">
+            # PHP
+          </a>
+        
+          <a href="https://su18.org/tag/bbwakgnJvv" class="post-tag">
+            # 学习笔记
+          </a>
+        
+          <a href="https://su18.org/tag/4JBdqT7-Dd" class="post-tag">
+            # Webshell
+          </a>
+        
+      </div>
+      
+        <a href="https://su18.org/post/EiNzuduRG" class="post-feature-image" style="background-image: url('https://su18.org/post-images/EiNzuduRG.jpg')">
+        </a>
+      
+      <div class="post-abstract">
+        
+      </di>
+    </article>
+  
+</div>
 
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+        <div class="pagination-container">
+  
+  
+</div>
 
-<script type="application/javascript">
+        <div class="site-footer">
+  网站使用 <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> 花了0.23s 搭建完成 | 
+  <a class="rss" href="https://su18.org/atom.xml" target="_blank">RSS</a>
+</div>
 
-AOS.init();
+<script>
+  hljs.initHighlightingOnLoad()
 
-hljs.initHighlightingOnLoad()
+  let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
 
-var app = new Vue({
-  el: '#app',
-  data: {
-    menuVisible: false,
-  },
-})
+  // This should probably be throttled.
+  // Especially because it triggers during smooth scrolling.
+  // https://lodash.com/docs/4.17.10#throttle
+  // You could do like...
+  // window.addEventListener("scroll", () => {
+  //    _.throttle(doThatStuff, 100);
+  // });
+  // Only not doing it here to keep this Pen dependency-free.
+
+  window.addEventListener("scroll", event => {
+    let fromTop = window.scrollY;
+
+    mainNavLinks.forEach((link, index) => {
+      let section = document.getElementById(decodeURI(link.hash).substring(1));
+      let nextSection = null
+      if (mainNavLinks[index + 1]) {
+        nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+      }
+      console.log('section.offsetHeight', section.offsetHeight);
+      if (section.offsetTop <= fromTop) {
+        if (nextSection) {
+          if (nextSection.offsetTop > fromTop) {
+            link.classList.add("current");
+          } else {
+            link.classList.remove("current");    
+          }
+        } else {
+          link.classList.add("current");
+        }
+      } else {
+        link.classList.remove("current");
+      }
+    });
+  });
 
 </script>
 
-
-
-
+      </div>
+    </div>
   </body>
 </html>

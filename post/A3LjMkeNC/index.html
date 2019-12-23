@@ -1,126 +1,113 @@
-<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8" >
-
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Java 反射 | 素十八</title>
-<meta name="description" content="暖风熏得游人醉，直把杭州作汴州。">
-
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-
+<meta name="description" content="暖风熏得游人醉，直把杭州作汴州。" />
+<link rel="shortcut icon" href="https://su18.org/favicon.ico?v=1577072065949">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-<link rel="shortcut icon" href="https://su18.org/favicon.ico?v=1577071217165">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://su18.org/styles/main.css">
 
-
-  
-    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css" />
-  
-
-  
-
-
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
 
-<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
-
-
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-154954923-1"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'UA-154954923-1');
-</script>
 
 
   </head>
   <body>
-    <div id="app" class="main">
-
-      <div class="sidebar" :class="{ 'full-height': menuVisible }">
-  <div class="top-container" data-aos="fade-right">
-    <div class="top-header-container">
-      <a class="site-title-container" href="https://su18.org">
-        <img src="https://su18.org/images/avatar.png?v=1577071217165" class="site-logo">
-        <h1 class="site-title">素十八</h1>
-      </a>
-      <div class="menu-btn" @click="menuVisible = !menuVisible">
-        <div class="line"></div>
-      </div>
-    </div>
-    <div>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://su18.org">
+  <img class="avatar" src="https://su18.org/images/avatar.png?v=1577072065949" alt="">
+  </a>
+  <h1 class="site-title">
+    素十八
+  </h1>
+  <p class="site-description">
+    暖风熏得游人醉，直把杭州作汴州。
+  </p>
+  <div class="menu-container">
+    
       
-        
-          <a href="/" class="site-nav">
-            首页
-          </a>
-        
+        <a href="/" class="menu">
+          首页
+        </a>
       
-        
-          <a href="/archives" class="site-nav">
-            归档
-          </a>
-        
+    
       
-        
-          <a href="/tags" class="site-nav">
-            标签
-          </a>
-        
+        <a href="/archives" class="menu">
+          归档
+        </a>
       
-        
-          <a href="http://2017.su18.org" class="site-nav" target="_blank">
-            2017
-          </a>
-        
+    
       
-        
-          <a href="http://2018.su18.org" class="site-nav" target="_blank">
-            2018
-          </a>
-        
+        <a href="/tags" class="menu">
+          标签
+        </a>
       
-    </div>
+    
+      
+        <a href="http://2017.su18.org" class="menu" target="_blank">
+          2017
+        </a>
+      
+    
+      
+        <a href="http://2018.su18.org" class="menu" target="_blank">
+          2018
+        </a>
+      
+    
   </div>
-  <div class="bottom-container" data-aos="flip-up" data-aos-offset="0">
-    <div class="social-container">
+  <div class="social-container">
+    
       
-        
+    
       
-        
+    
       
-        
+    
       
-        
+    
       
-        
-      
-    </div>
-    <div class="site-description">
-      暖风熏得游人醉，直把杭州作汴州。
-    </div>
-    <div class="site-footer">
-      网站使用 <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> 花了0.23s 搭建完成 | <a class="rss" href="https://su18.org/atom.xml" target="_blank">RSS</a>
-    </div>
+    
   </div>
 </div>
 
-
-      <div class="main-container">
-        <div class="content-container" data-aos="fade-up">
-          <div class="post-detail">
-            <h2 class="post-title">Java 反射</h2>
-            <div class="post-date">2019-12-11</div>
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              Java 反射
+            </h2>
+            <div class="post-info">
+              <span>
+                2019-12-11
+              </span>
+              <span>
+                35 min read
+              </span>
+              
+                <a href="https://su18.org/tag/f16FB3h4R" class="post-tag">
+                  # Java
+                </a>
+              
+                <a href="https://su18.org/tag/BzxskQbtKl" class="post-tag">
+                  # 反射
+                </a>
+              
+                <a href="https://su18.org/tag/bbwakgnJvv" class="post-tag">
+                  # 学习笔记
+                </a>
+              
+            </div>
             
-              <div class="feature-container" style="background-image: url('https://su18.org/post-images/A3LjMkeNC.jpg')">
-              </div>
+              <img class="post-feature-image" src="https://su18.org/post-images/A3LjMkeNC.jpg" alt="">
             
-            <div class="post-content">
-              <h1 id="一-前言">一、前言</h1>
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <h1 id="一-前言">一、前言</h1>
 <p>本章为新手向零基础 Java 反射学习笔记。</p>
 <p>截取部分载入<a href="http://p2j.cn">园长</a>发起的项目<a href="https://github.com/anbai-inc/javaweb-sec">javaweb-sec</a>。</p>
 <p>Gitbook地址：<a href="https://javasec.org/">https://javasec.org/</a></p>
@@ -984,7 +971,7 @@ Array.set(matrix, 1, row1);
 </tbody>
 </table>
 <h2 id="10-常见异常">10. 常见异常</h2>
-<h3 id="1-nosuchmethodexception">① NoSuchMethodException</h3>
+<h3 id="nosuchmethodexception">NoSuchMethodException</h3>
 <p>造成这种异常的可能有：</p>
 <ul>
 <li>方法本身不存在</li>
@@ -994,21 +981,21 @@ Array.set(matrix, 1, row1);
 <p>反射调用泛型方法时，由于运行前编译器已经把泛型擦除，参数类型会被擦除为上边界（默认 Object）。</p>
 <p>此时再试图传入特定类型的参数会导致<code>NoSuchMethodException</code>异常。</p>
 <p>解决的方式是使用 Object 作为参数类型即可。</p>
-<h3 id="2-illegalaccessexception">② IllegalAccessException</h3>
+<h3 id="illegalaccessexception">IllegalAccessException</h3>
 <p>当你访问 private 的方法或者 private 的类中的方法，会抛出<code>IllegalAccessException</code>异常。</p>
 <p>也有可能是试图操作 final 修饰的 Field 导致。</p>
 <p>解决方法就是给该 method 设置 <code>setAccessible(true)</code>。</p>
-<h3 id="3-llegalargumentexception">③ llegalArgumentException</h3>
+<h3 id="llegalargumentexception">llegalArgumentException</h3>
 <p>如果一个方法没有参数，但是我们反射时传入参数，就会导致 <code>llegalArgumentException</code>。</p>
-<h3 id="4-invocationtargetexception">④ InvocationTargetException</h3>
+<h3 id="invocationtargetexception">InvocationTargetException</h3>
 <p>被调用的方法本身所抛出的异常在反射中都会以 <code>InvocationTargetException</code>抛出。</p>
 <p>换句话说，反射调用过程中如果异常 <code>InvocationTargetException</code>抛出，说明反射调用本身是成功的，因为这个异常是目标方法本身所抛出的异常。</p>
 <p>通过调用 <code>InvocationTargetException</code> 对象的 <code>getCause()</code> 方法，会得到 Throwable 对象，原始的异常就包含在里面。</p>
-<h3 id="5-classnotfoundexception">⑤ ClassNotFoundException</h3>
+<h3 id="classnotfoundexception">ClassNotFoundException</h3>
 <p><code>Class.forName()</code>传入的包名有误，或 Class 本身不存在。将会引发此异常。</p>
-<h3 id="6-nosuchfieldexception">⑥ NoSuchFieldException</h3>
+<h3 id="nosuchfieldexception">NoSuchFieldException</h3>
 <p>Field 名称不正确，或对 <code>getField()</code> 和 <code>getDeclaredField()</code> 的使用不正确将会引发此异常。</p>
-<h3 id="7-instantiationexception">⑦ InstantiationException</h3>
+<h3 id="instantiationexception">InstantiationException</h3>
 <p>实例化出错，可能是 <code>Class.newInstance()</code> 或者 <code>Constructor.newInstance()</code> 出现了异常。</p>
 <h1 id="七-简单使用反射">七、简单使用反射</h1>
 <p>我们了解的反射的基本情况，能够获取 Class 对象，又能从 Class 中获取相应的信息，记下来记录如何使用反射。</p>
@@ -1138,91 +1125,163 @@ Outer.Inner inner = new Outer().new Inner();
 </ul>
 <p>虽然大家都在说反射性能低，是因为无法通过 JIT 进行优化，但现在的 JDK 已经非常强悍了，并不至于因为性能开销大而无法使用强大的反射功能。</p>
 
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#%E4%B8%80-%E5%89%8D%E8%A8%80">一、前言</a></li>
+<li><a href="#%E4%BA%8C-%E5%8F%8D%E5%B0%84%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%AE%9A%E4%B9%89">二、反射的基本定义</a></li>
+<li><a href="#%E4%B8%89-%E5%8F%8D%E5%B0%84%E7%9A%84%E5%9F%BA%E7%A1%80">三、反射的基础</a></li>
+<li><a href="#%E5%9B%9B-%E8%8E%B7%E5%8F%96-class-%E5%AF%B9%E8%B1%A1%E7%9A%84%E6%96%B9%E6%B3%95">四、获取 Class 对象的方法</a>
+<ul>
+<li><a href="#1-objectgetclass">1. Object.getClass()</a></li>
+<li><a href="#2-%E4%BD%BF%E7%94%A8class-%E8%AF%AD%E6%B3%95">2. 使用.Class 语法</a></li>
+<li><a href="#3-classforname">3. Class.forName()</a></li>
+<li><a href="#4-%E5%9F%BA%E7%A1%80%E7%B1%BB%E5%9E%8B%E5%B0%81%E8%A3%85%E7%B1%BB%E5%9E%8B-type">4. 基础类型封装类型 TYPE</a></li>
+<li><a href="#5-%E8%83%BD%E5%A4%9F%E8%BF%94%E5%9B%9E-class-%E7%B1%BB%E5%9E%8B%E7%9A%84%E6%96%B9%E6%B3%95">5. 能够返回 Class 类型的方法</a></li>
+</ul>
+</li>
+<li><a href="#%E4%BA%94-%E4%BB%8E-class-%E4%B8%AD%E8%8E%B7%E5%8F%96%E4%BF%A1%E6%81%AF">五、从 Class 中获取信息</a>
+<ul>
+<li><a href="#1-%E8%8E%B7%E5%8F%96%E7%B1%BB%E7%9A%84%E4%BF%A1%E6%81%AF">1. 获取类的信息</a></li>
+<li><a href="#2-%E5%88%A4%E6%96%AD%E7%B1%BB%E6%9C%AC%E8%BA%AB%E4%BF%A1%E6%81%AF%E7%9A%84%E6%96%B9%E6%B3%95">2. 判断类本身信息的方法</a></li>
+<li><a href="#3-%E8%8E%B7%E5%8F%96%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95">3. 获取构造方法</a></li>
+<li><a href="#4-%E8%8E%B7%E5%8F%96%E7%B1%BB%E7%9A%84%E6%88%90%E5%91%98%E6%96%B9%E6%B3%95">4. 获取类的成员方法</a></li>
+<li><a href="#5-%E8%8E%B7%E5%8F%96%E7%B1%BB%E7%9A%84%E6%88%90%E5%91%98%E5%B1%9E%E6%80%A7">5. 获取类的成员属性</a></li>
+</ul>
+</li>
+<li><a href="#%E5%85%AD-%E5%8F%8D%E5%B0%84%E6%93%8D%E4%BD%9C">六、反射操作</a>
+<ul>
+<li><a href="#1-field">1.  Field</a></li>
+<li><a href="#2-method">2. Method</a></li>
+<li><a href="#3-constructor">3. Constructor</a></li>
+<li><a href="#4-executable">4. Executable</a></li>
+<li><a href="#5-accessibleobject">5. AccessibleObject</a></li>
+<li><a href="#6-annotatedelement">6. AnnotatedElement</a></li>
+<li><a href="#7-member">7. Member</a></li>
+<li><a href="#8-%E5%8F%8D%E5%B0%84%E6%93%8D%E4%BD%9C%E6%80%BB%E7%BB%93">8. 反射操作总结</a></li>
+<li><a href="#9-%E6%95%B0%E7%BB%84%E5%92%8C%E6%9E%9A%E4%B8%BE">9. 数组和枚举</a>
+<ul>
+<li><a href="#%E6%95%B0%E7%BB%84">数组</a></li>
+<li><a href="#%E6%9E%9A%E4%B8%BE">枚举</a></li>
+</ul>
+</li>
+<li><a href="#10-%E5%B8%B8%E8%A7%81%E5%BC%82%E5%B8%B8">10. 常见异常</a>
+<ul>
+<li><a href="#nosuchmethodexception">NoSuchMethodException</a></li>
+<li><a href="#illegalaccessexception">IllegalAccessException</a></li>
+<li><a href="#llegalargumentexception">llegalArgumentException</a></li>
+<li><a href="#invocationtargetexception">InvocationTargetException</a></li>
+<li><a href="#classnotfoundexception">ClassNotFoundException</a></li>
+<li><a href="#nosuchfieldexception">NoSuchFieldException</a></li>
+<li><a href="#instantiationexception">InstantiationException</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%E4%B8%83-%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8%E5%8F%8D%E5%B0%84">七、简单使用反射</a>
+<ul>
+<li><a href="#1-%E5%88%9B%E5%BB%BA%E7%B1%BB%E5%AF%B9%E8%B1%A1">1. 创建类对象</a></li>
+<li><a href="#2-%E8%8E%B7%E5%8F%96%E5%B1%9E%E6%80%A7">2. 获取属性</a></li>
+<li><a href="#3-%E8%B0%83%E7%94%A8%E6%96%B9%E6%B3%95">3. 调用方法</a></li>
+<li><a href="#4-%E8%B0%83%E7%94%A8%E5%86%85%E9%83%A8%E7%B1%BB">4. 调用内部类</a></li>
+</ul>
+</li>
+<li><a href="#%E5%85%AB-%E5%8F%8D%E5%B0%84%E7%9A%84%E4%BD%9C%E7%94%A8">八、反射的作用</a></li>
+<li><a href="#%E4%B9%9D-%E5%8F%8D%E5%B0%84%E7%9A%84%E7%BC%BA%E7%82%B9">九、反射的缺点</a></li>
+</ul>
+
+              </div>
             </div>
-            
-              <div class="tag-container">
-                
-                  <a href="https://su18.org/tag/f16FB3h4R" class="tag">
-                    Java
-                  </a>
-                
-                  <a href="https://su18.org/tag/BzxskQbtKl" class="tag">
-                    反射
-                  </a>
-                
-                  <a href="https://su18.org/tag/bbwakgnJvv" class="tag">
-                    学习笔记
-                  </a>
-                
-              </div>
-            
-            
-              <div class="next-post">
-                <div class="next">下一篇</div>
-                <a href="https://su18.org/post/EiNzuduRG">
-                  <h3 class="post-title">
-                    中国特色PHP大马
-                  </h3>
-                </a>
-              </div>
-            
-
-            
-              
-                <div id="gitalk-container" data-aos="fade-in"></div>
-              
-
-              
-            
-
-          </div>
-
+          </article>
         </div>
-      </div>
-    </div>
 
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://su18.org/post/EiNzuduRG">
+              <h3 class="post-title">
+                中国特色PHP大马
+              </h3>
+            </a>
+          </div>
+        
 
-<script type="application/javascript">
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
 
-AOS.init();
+<div id="gitalk-container"></div>
 
-hljs.initHighlightingOnLoad()
+<script>
 
-var app = new Vue({
-  el: '#app',
-  data: {
-    menuVisible: false,
-  },
-})
+  var gitalk = new Gitalk({
+    clientID: 'f7b59be97fcefada5030',
+    clientSecret: 'dfbf7baf0b69544dbf1bc8c904338e31280cea7f',
+    repo: 'blogtalk',
+    owner: 'JosephTribbianni',
+    admin: ['JosephTribbianni'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
 
 </script>
 
+          
 
+          
+        
 
-  
-    <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
-    <script>
+        <div class="site-footer">
+  网站使用 <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> 花了0.23s 搭建完成 | 
+  <a class="rss" href="https://su18.org/atom.xml" target="_blank">RSS</a>
+</div>
 
-      var gitalk = new Gitalk({
-        clientID: 'f7b59be97fcefada5030',
-        clientSecret: 'dfbf7baf0b69544dbf1bc8c904338e31280cea7f',
-        repo: 'blogtalk',
-        owner: 'JosephTribbianni',
-        admin: ['JosephTribbianni'],
-        id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
-        distractionFreeMode: false  // Facebook-like distraction free mode
-      })
+<script>
+  hljs.initHighlightingOnLoad()
 
-      gitalk.render('gitalk-container')
+  let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
 
-    </script>
-  
+  // This should probably be throttled.
+  // Especially because it triggers during smooth scrolling.
+  // https://lodash.com/docs/4.17.10#throttle
+  // You could do like...
+  // window.addEventListener("scroll", () => {
+  //    _.throttle(doThatStuff, 100);
+  // });
+  // Only not doing it here to keep this Pen dependency-free.
 
-  
+  window.addEventListener("scroll", event => {
+    let fromTop = window.scrollY;
 
+    mainNavLinks.forEach((link, index) => {
+      let section = document.getElementById(decodeURI(link.hash).substring(1));
+      let nextSection = null
+      if (mainNavLinks[index + 1]) {
+        nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+      }
+      console.log('section.offsetHeight', section.offsetHeight);
+      if (section.offsetTop <= fromTop) {
+        if (nextSection) {
+          if (nextSection.offsetTop > fromTop) {
+            link.classList.add("current");
+          } else {
+            link.classList.remove("current");    
+          }
+        } else {
+          link.classList.add("current");
+        }
+      } else {
+        link.classList.remove("current");
+      }
+    });
+  });
 
+</script>
 
-
+      </div>
+    </div>
   </body>
 </html>
