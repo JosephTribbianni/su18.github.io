@@ -4,7 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Java 反射 | 素十八</title>
 <meta name="description" content="暖风熏得游人醉，直把杭州作汴州。" />
-<link rel="shortcut icon" href="https://su18.org/favicon.ico?v=1577072065949">
+<link rel="shortcut icon" href="https://su18.org/favicon.ico?v=1582704674772">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://su18.org/styles/main.css">
@@ -20,7 +20,7 @@
       <div class="main-content">
         <div class="site-header">
   <a href="https://su18.org">
-  <img class="avatar" src="https://su18.org/images/avatar.png?v=1577072065949" alt="">
+  <img class="avatar" src="https://su18.org/images/avatar.png?v=1582704674772" alt="">
   </a>
   <h1 class="site-title">
     素十八
@@ -89,15 +89,15 @@
                 35 min read
               </span>
               
-                <a href="https://su18.org/tag/f16FB3h4R" class="post-tag">
+                <a href="https://su18.org/tag/f16FB3h4R/" class="post-tag">
                   # Java
                 </a>
               
-                <a href="https://su18.org/tag/BzxskQbtKl" class="post-tag">
+                <a href="https://su18.org/tag/BzxskQbtKl/" class="post-tag">
                   # 反射
                 </a>
               
-                <a href="https://su18.org/tag/bbwakgnJvv" class="post-tag">
+                <a href="https://su18.org/tag/bbwakgnJvv/" class="post-tag">
                   # 学习笔记
                 </a>
               
@@ -111,7 +111,7 @@
 <p>本章为新手向零基础 Java 反射学习笔记。</p>
 <p>截取部分载入<a href="http://p2j.cn">园长</a>发起的项目<a href="https://github.com/anbai-inc/javaweb-sec">javaweb-sec</a>。</p>
 <p>Gitbook地址：<a href="https://javasec.org/">https://javasec.org/</a></p>
-<p>微信交流群：<img src="https://su18.org/post-images/1576829003536.png" alt=""></p>
+<p>微信交流群：<img src="https://su18.org/post-images/1576829003536.png" alt="" loading="lazy"></p>
 <h1 id="二-反射的基本定义">二、反射的基本定义</h1>
 <p>官方文档：<br>
 https://docs.oracle.com/javase/8/docs/technotes/guides/reflection/index.html</p>
@@ -429,7 +429,7 @@ Class c = Void.TYPE;
 <h1 id="六-反射操作">六、反射操作</h1>
 <p>能够反射得到类、属性、方法之后，应该如何操作呢？</p>
 <p>首先我们先看反射的包 <code>java.lang.reflect</code> 下的 Member 接口，顾名思义，这是一个标识为成员的接口，这个接口有若干个实现：</p>
-<figure data-type="image" tabindex="1"><img src="https://su18.org/post-images/1576829075037.png" alt=""></figure>
+<figure data-type="image" tabindex="1"><img src="https://su18.org/post-images/1576829075037.png" alt="" loading="lazy"></figure>
 <p>其中我们首先关注的是：</p>
 <ul>
 <li><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/reflect/Field.html"><code>java.lang.reflect.Field</code></a> ：对应类变量。</li>
@@ -443,7 +443,7 @@ Class c = Void.TYPE;
 <h2 id="1-field">1.  Field</h2>
 <p>每个成员变量有<strong>类型</strong>和<strong>值</strong>。<code>java.lang.reflect.Field</code> 为我们提供了获取当前对象的成员变量的类型，和重新设值的方法。</p>
 <p>具体方法如下：</p>
-<figure data-type="image" tabindex="2"><img src="https://su18.org/post-images/1576829201425.png" alt=""></figure>
+<figure data-type="image" tabindex="2"><img src="https://su18.org/post-images/1576829201425.png" alt="" loading="lazy"></figure>
 <p>获取<strong>变量的类型</strong>：</p>
 <table>
 <thead>
@@ -591,7 +591,7 @@ Class c = Void.TYPE;
 <p>继承的方法（包括重载、重写和隐藏的）会被编译器强制执行，这些方法都无法反射。因此，反射一个类的方法时不考虑父类的方法，只考虑当前类的方法。</p>
 <p>每个方法都由<strong>修饰符</strong>、<strong>返回值</strong>、<strong>参数</strong>、<strong>注解</strong>和<strong>抛出的异常</strong>组成。</p>
 <p><code>java.lang.reflect.Method</code> 方法为我们提供了获取上述部分的 API。</p>
-<figure data-type="image" tabindex="3"><img src="https://su18.org/post-images/1576829270568.png" alt=""></figure>
+<figure data-type="image" tabindex="3"><img src="https://su18.org/post-images/1576829270568.png" alt="" loading="lazy"></figure>
 <p>重写 Object 类的方法不再描述，重写 Executable 的方法将在后面部分描述，在此只列举一些 Method 类自己的方法。</p>
 <table>
 <thead>
@@ -656,7 +656,7 @@ Class c = Void.TYPE;
 <p>这里需要注意的是，invoke 方法的两个参数均为<font color='red'> Object </font>类型。</p>
 <p>简单来说，通过 <code>invoke()</code> 方法可以让我们调用反射得到的类的方法。那么具体是怎么实现的呢？</p>
 <p>invoke过程图解：</p>
-<figure data-type="image" tabindex="4"><img src="https://su18.org/post-images/1576829311976.png" alt=""></figure>
+<figure data-type="image" tabindex="4"><img src="https://su18.org/post-images/1576829311976.png" alt="" loading="lazy"></figure>
 <p>此处不进行过多描述，有兴趣可以跟一下源码。</p>
 <h2 id="3-constructor">3. Constructor</h2>
 <p>同样地，我们也只列举 Constructor 自己的 public 方法：</p>
@@ -684,9 +684,9 @@ Class c = Void.TYPE;
 <p>因此，还是建议直接使用 <code>Constructor.newInstance()</code> 反射构造方法，几乎全部的框架都是使用此种模式进行反射的。</p>
 <h2 id="4-executable">4. Executable</h2>
 <p>Executable 抽象类继承 AccessibleObject 类，实现了 Member 接口，并有两个子类分别为 Constructor 和 Method，如下：</p>
-<figure data-type="image" tabindex="5"><img src="https://su18.org/post-images/1576829384287.png" alt=""></figure>
+<figure data-type="image" tabindex="5"><img src="https://su18.org/post-images/1576829384287.png" alt="" loading="lazy"></figure>
 <p>该类中定义了多个方法，能够在通过反射获得的成员方法或构造方法中使用：</p>
-<figure data-type="image" tabindex="6"><img src="https://su18.org/post-images/1576829418123.png" alt=""></figure>
+<figure data-type="image" tabindex="6"><img src="https://su18.org/post-images/1576829418123.png" alt="" loading="lazy"></figure>
 <p>该抽象类声明的方法有：</p>
 <table>
 <thead>
@@ -753,7 +753,7 @@ Class c = Void.TYPE;
 <h2 id="5-accessibleobject">5. AccessibleObject</h2>
 <p>在 <code>java.lang.reflect</code> 包中，存在一个 AccessibleObject 类，细心的同学已经发现了，该类是Method、Field、Constructor 类的基类，它提供了标记反射对象的能力，以抑制在使用时使用默认 Java 语言访问控制检查，从而能够任意调用被私有化保护的方法、域和构造函数。</p>
 <p>此类实现了 AnnotatedElement 接口，主要是注解相关的操作。</p>
-<figure data-type="image" tabindex="7"><img src="https://su18.org/post-images/1576829477349.png" alt=""></figure>
+<figure data-type="image" tabindex="7"><img src="https://su18.org/post-images/1576829477349.png" alt="" loading="lazy"></figure>
 <p>声明的方法：</p>
 <table>
 <thead>
@@ -879,7 +879,7 @@ Class c = Void.TYPE;
 <li><font color='blue'>Constructor、Method、Field</font>各自基础或实现上述接口和抽象类，赋予了他们获取相关信息的能力。</li>
 </ul>
 <p>以上类或接口之间的关系为：</p>
-<figure data-type="image" tabindex="8"><img src="https://su18.org/post-images/1576829517523.png" alt=""></figure>
+<figure data-type="image" tabindex="8"><img src="https://su18.org/post-images/1576829517523.png" alt="" loading="lazy"></figure>
 <h2 id="9-数组和枚举">9. 数组和枚举</h2>
 <p>数组和枚举也是对象，但是在反射中，对数组和枚举的创建、访问和普通对象有些不同，所以 Java 反射为数组和枚举提供了一些特定的API接口。</p>
 <h3 id="数组">数组</h3>
@@ -1080,7 +1080,7 @@ class TestReflection {
 }
 </code></pre>
 <p>上例演示了在各种不同情况下调用的方式的不同结果如下：</p>
-<figure data-type="image" tabindex="9"><img src="https://su18.org/post-images/1576831195372.png" alt=""></figure>
+<figure data-type="image" tabindex="9"><img src="https://su18.org/post-images/1576831195372.png" alt="" loading="lazy"></figure>
 <h2 id="4-调用内部类">4. 调用内部类</h2>
 <p>假设<code>com.reflect.Outer</code>类，有一个内部类 inner 和静态内部类 StaticInner 。 那么静态内部类的构造函数为<code>Outer$StaticInner();</code> 而普通内部类的构造函数为<code>Outer$Inner(Outer outer)</code>，多了一个 final 的 Outer 类型属性，即<code>Outer$Inner.this$0</code>，用于存储外部类的属性值，也就是说非static内部类保持了外部类的引用。</p>
 <p>直接实例化内部类方法如下：</p>
@@ -1198,7 +1198,7 @@ Outer.Inner inner = new Outer().new Inner();
         
           <div class="next-post">
             <div class="next">下一篇</div>
-            <a href="https://su18.org/post/EiNzuduRG">
+            <a href="https://su18.org/post/EiNzuduRG/">
               <h3 class="post-title">
                 中国特色PHP大马
               </h3>
