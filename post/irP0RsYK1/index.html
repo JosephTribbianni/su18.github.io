@@ -4,7 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Java Instrumentation | 素十八</title>
 <meta name="description" content="暖风熏得游人醉，直把杭州作汴州。" />
-<link rel="shortcut icon" href="https://su18.org/favicon.ico?v=1582704879900">
+<link rel="shortcut icon" href="https://su18.org/favicon.ico?v=1582968632503">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
 <link rel="stylesheet" href="https://su18.org/styles/main.css">
@@ -20,7 +20,7 @@
       <div class="main-content">
         <div class="site-header">
   <a href="https://su18.org">
-  <img class="avatar" src="https://su18.org/images/avatar.png?v=1582704879900" alt="">
+  <img class="avatar" src="https://su18.org/images/avatar.png?v=1582968632503" alt="">
   </a>
   <h1 class="site-title">
     素十八
@@ -113,7 +113,7 @@
 <h2 id="2-unmodifiableclassexception-异常类">2. UnmodifiableClassException 异常类</h2>
 <p>当程序无法修改制定的类时，会抛出该异常。由 <code>Instrumentation.redefineClasses</code> 的实现抛出。</p>
 <h2 id="3-classdefinition-绑定定义类">3. ClassDefinition 绑定/定义类</h2>
-<pre><code>public final class ClassDefinition {
+<pre><code class="language-java">public final class ClassDefinition {
     /**
      *  要重定义的类
      */
@@ -150,7 +150,7 @@
 <h2 id="4-classfiletransformer-接口">4. ClassFileTransformer 接口</h2>
 <p>此接口为转换类文件的代理接口。提供了 <code>transform()</code> 方法用于修改原类的注入。<br>
 我们可以在获取到 Instrumentation 对象后通过 <code>addTransformer()</code> 方法添加自定义类文件转换器。</p>
-<pre><code>public interface ClassFileTransformer {
+<pre><code class="language-java">public interface ClassFileTransformer {
 
 
     /**
@@ -265,7 +265,7 @@
 <h1 id="四-用法">四、用法</h1>
 <p>可以看到，是非常简单和清晰的一个包，有了这些方法之后我们就可以通过代理，在main函数运行前或后动态的改变类的定义和其他处理操作。</p>
 <p>接下来我们来看用法，首先定义一个类，这个类就是我们将要修改的类：</p>
-<pre><code>package org.su18;
+<pre><code class="language-java">package org.su18;
 
 public class MyClass {
 
@@ -278,7 +278,7 @@ public class MyClass {
 <p>毫无疑问，此类的 <code>sayNice()</code> 方法在运行时将打印出字符串 “Nice!” 。</p>
 <h2 id="1-使用-premain-让代理在函数运行前执行">1. 使用 premain 让代理在函数运行前执行</h2>
 <p>然后接下来进行定义自己的 Transformer，如下代码，我这里使用判断如果类名为指定类的名称，则使用<code>ClassHandler.replaceBytes()</code> 方法进行字节码的替换。</p>
-<pre><code>package org.su18;
+<pre><code class="language-java">package org.su18;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
@@ -303,7 +303,7 @@ public class Transformer implements ClassFileTransformer {
 }
 </code></pre>
 <p>字节处理代码：</p>
-<pre><code>package org.su18;
+<pre><code class="language-java">package org.su18;
 
 import java.util.Arrays;
 
@@ -354,7 +354,7 @@ public class ClassHandler {
 <p>接下来定义 Premain，类名随意，类中定义了 <code>premain()</code> 方法添加自己的 Transformer。<br>
 其中参数 agentArgs 是 premain 函数得到的程序参数，随同 “-javaagent”一起传入。与 main 函数不同的是，这个参数是一个字符串而不是一个字符串数组，如果程序参数有多个，程序将自行解析这个字符串。<br>
 Inst 是一个 java.lang.instrument.Instrumentation 的实例，由 JVM 自动传入。</p>
-<pre><code>package org.su18;
+<pre><code class="language-java">package org.su18;
 
 import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
@@ -371,7 +371,7 @@ public class Premain {
 <p>最后需要在 MANIFEST.MF 中修改 :<code>Premain-Class: org.su18.Premain</code>。</p>
 <figure data-type="image" tabindex="1"><img src="https://su18.org/post-images/1582552426249.jpg" alt="" loading="lazy"></figure>
 <p>并且在 pom.xml 中加入如下配置：</p>
-<pre><code>&lt;plugin&gt;
+<pre><code class="language-xml">&lt;plugin&gt;
      &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
         &lt;artifactId&gt;maven-jar-plugin&lt;/artifactId&gt;
         &lt;version&gt;2.3.2&lt;/version&gt;
@@ -384,7 +384,7 @@ public class Premain {
 </code></pre>
 <p>然后使用 maven 构建 jar 包：<code>mvn clean install</code>。</p>
 <p>打包之后，在运行程序时加入如下参数：</p>
-<pre><code>-javaagent:/Users/phoebe/IdeaProjects/AgentTest/target/AgentTest-1.0.jar org.su18.MyClass 
+<pre><code class="language-shell">-javaagent:/Users/phoebe/IdeaProjects/AgentTest/target/AgentTest-1.0.jar org.su18.MyClass 
 </code></pre>
 <p>运行 MyClass 程序，输出如下：</p>
 <figure data-type="image" tabindex="2"><img src="https://su18.org/post-images/1582553711511.jpg" alt="" loading="lazy"></figure>
@@ -393,7 +393,7 @@ public class Premain {
 <p>JDK 1.6 新增了attach (附加方式)方式，可以对运行中的 Java 进程附加 Agent 。</p>
 <p>这就是我们说的 agentmain ，使用方式和 permain 十分相似，包括编写 MANIFEST.MF 和生成代理 Jar 包。但是，它并不需要通过<code>-javaagent</code> 命令行形式引入代理 Jar ，而是在运行时通过 attach 工具激活指定代理即可。</p>
 <p>同样的，我们简单修改下 MyClass，使程序每过三秒打印一次 “Nice!” 字符串。</p>
-<pre><code>package org.su18;
+<pre><code class="language-java">package org.su18;
 
 public class MyClass {
 
@@ -410,7 +410,7 @@ public class MyClass {
 }
 </code></pre>
 <p>Transformer 和程序处理逻辑不变，将 Premain 修改为 AgentMain。</p>
-<pre><code>package org.su18;
+<pre><code class="language-java">package org.su18;
 
 import java.lang.instrument.Instrumentation;
 import java.lang.instrument.UnmodifiableClassException;
@@ -426,7 +426,7 @@ public class AgentMain {
 </code></pre>
 <p>这里可以看到和 premain 的区别在于，我们在 addTransformer 的参数中指定了 true，而且使用了 retransformClasses 重新加载了指定的类。</p>
 <p>然后我们再编写 AttachTest 类用来将我们的程序 attach 进去。</p>
-<pre><code>package org.su18;
+<pre><code class="language-java">package org.su18;
 
 import com.sun.tools.attach.*;
 
@@ -456,7 +456,7 @@ public class AttachTest {
 </code></pre>
 <p>别忘了修改 MANIFEST.MF 文件：<code>Agent-Class: org.su18.AgentMain</code>。</p>
 <p>然后同样进行打包，如果找不到 tools 的话可以指定 classpath，还有一种简单粗暴的方式：</p>
-<pre><code>        &lt;dependency&gt;
+<pre><code class="language-xml">        &lt;dependency&gt;
             &lt;groupId&gt;com.sun&lt;/groupId&gt;
             &lt;artifactId&gt;tools&lt;/artifactId&gt;
             &lt;version&gt;1.8.0&lt;/version&gt;

@@ -1,0 +1,847 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>字节码及ASM入门 | 素十八</title>
+<meta name="description" content="暖风熏得游人醉，直把杭州作汴州。" />
+<link rel="shortcut icon" href="https://su18.org/favicon.ico?v=1582968632503">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://su18.org/styles/main.css">
+
+<script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700">
+
+
+
+  </head>
+  <body>
+    <div class="main">
+      <div class="main-content">
+        <div class="site-header">
+  <a href="https://su18.org">
+  <img class="avatar" src="https://su18.org/images/avatar.png?v=1582968632503" alt="">
+  </a>
+  <h1 class="site-title">
+    素十八
+  </h1>
+  <p class="site-description">
+    暖风熏得游人醉，直把杭州作汴州。
+  </p>
+  <div class="menu-container">
+    
+      
+        <a href="/" class="menu">
+          首页
+        </a>
+      
+    
+      
+        <a href="/archives" class="menu">
+          归档
+        </a>
+      
+    
+      
+        <a href="/tags" class="menu">
+          标签
+        </a>
+      
+    
+      
+        <a href="http://2017.su18.org" class="menu" target="_blank">
+          2017
+        </a>
+      
+    
+      
+        <a href="http://2018.su18.org" class="menu" target="_blank">
+          2018
+        </a>
+      
+    
+  </div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+        <div class="post-detail">
+          <article class="post">
+            <h2 class="post-title">
+              字节码及ASM入门
+            </h2>
+            <div class="post-info">
+              <span>
+                2020-02-28
+              </span>
+              <span>
+                28 min read
+              </span>
+              
+                <a href="https://su18.org/tag/f16FB3h4R/" class="post-tag">
+                  # Java
+                </a>
+              
+            </div>
+            
+              <img class="post-feature-image" src="https://su18.org/post-images/Nlwq9S-Ru.jpg" alt="">
+            
+            <div class="post-content-wrapper">
+              <div class="post-content">
+                <h1 id="一-前言">一、前言</h1>
+<p>本篇为字节码及 ASM 使用学习笔记。学，就硬学。<br>
+大部分转载自 https://segmentfault.com/a/1190000009956534。</p>
+<h1 id="二-字节码">二、字节码</h1>
+<h2 id="1-字节码定义">1. 字节码定义</h2>
+<p>字节码（bytecode）是一种包含执行程序、由一序列 op 代码/数据对 组成的二进制文件。字节码是一种中间码，它比机器码更抽象，需要直译器转译后才能成为机器码的中间代码。通常情况下它是已经经过编译，但与特定机器码无关。字节码主要为了实现特定软件运行和软件环境、与硬件环境无关。</p>
+<p>字节码的实现方式是通过编译器和虚拟机器。编译器将源码编译成字节码，特定平台上的虚拟机器将字节码转译为可以直接执行的指令。</p>
+<p>Java 字节码的执行是由 JVM 执行引擎来完成的。</p>
+<h2 id="2-字节码执行">2. 字节码执行</h2>
+<p>方法调用在 JVM 中转换成的是字节码执行，字节码指令执行的数据结构就是栈帧（stack frame）。也就是在虚拟机栈中的栈元素。虚拟机会为每个方法分配一个栈帧，因为虚拟机栈是 LIFO 的，所以当前线程正在活动的栈帧，也就是栈顶的栈帧，JVM规范中称之为“ CurrentFrame ”，这个当前栈帧对应的方法就是“CurrentMethod”。字节码的执行操作，指的就是对当前栈帧数据结构进行的操作。</p>
+<p>JVM 运行时的数据区的结构如下图：<br>
+<img src="https://su18.org/post-images/1582875302444.png" alt="" loading="lazy"></p>
+<p>栈帧的数据结构主要分为四个部分：局部变量表、操作数栈、动态链接以及方法返回地址（包括正常调用和异常调用的完成结果）。下面就一一介绍下这四种数据结构。</p>
+<h3 id="局部变量表-local-variables">局部变量表 local variables</h3>
+<p>当方法被调用时，参数会传递到从 0 开始的连续的局部变量表的索引位置上。栈帧中局部变量表的长度存储在类或接口的二进制表示中。阅读 Class 文件会找到 Code 属性，所以能知道 local variables 的最大长度是在编译期间决定的。</p>
+<p><font color="blue">一个局部变量表的占用了 32 位的存储空间（一个存储单位称之为 slot ，槽），所以可以存储一个 boolean、byte、char、short、float、int、refrence 和 returnAdress 数据， long 和 double 需要 2 个连续的局部变量表来保存，通过较小位置的索引来获取。如果被调用的是实例方法，那么第 0 个位置存储 “this” 关键字代表当前实例对象的引用。</font></p>
+<h3 id="操作数栈-operand-stack">操作数栈 operand stack</h3>
+<p>操作数栈同局部变量表一样，也是编译期间就能决定了其存储空间（最大的单位长度），通过 Code 属性存储在类或接口的字节流中。操作数栈也是个 LIFO 栈。</p>
+<p>操作数栈是在JVM字节码执行一些指令时创建的，主要是把局部变量表中的变量压入操作数栈，在操作数栈中进行字节码指令的操作，再将变量出操作数栈，结果入操作数栈。</p>
+<p>同局部变量表,除了 long 和 double ，其他类型数据都只占用一个栈的单位深度。</p>
+<h3 id="动态链接">动态链接</h3>
+<p>每个栈帧指向运行时常量池中该栈帧所属的方法的引用，也就是字节码的发放调用的引用。动态链接就是将符号引用所表示的方法，转换成方法的直接引用。</p>
+<p>加载阶段或第一次使用时转化为直接引用的（将变量的访问转化为访问这些变量的存储结构所在的运行时内存位置）就叫做静态解析。</p>
+<p>JVM的动态链接还支持运行期转化为直接引用。也可以叫做 Late Binding ，晚期绑定。动态链接是 java 灵活 OO 的基础结构。</p>
+<h3 id="方法返回地址">方法返回地址</h3>
+<p>方法正常退出，JVM 执行引擎会恢复上层方法局部变量表操作数栈并把返回值压入调用者的栈帧的操作数栈，PC 计数器的值就会调整到方法调用指令后面的一条指令。</p>
+<p>这样使得当前的栈帧能够和调用者连接起来，并且让调用者的栈帧的操作数栈继续往下执行。</p>
+<p>方法的异常调用完成，主要是 JVM 抛出的异常，如果异常没有被捕获住，或者遇到 athrow 字节码指令显示抛出，那么就没有返回值给调用者。</p>
+<p><strong>注：</strong></p>
+<ol>
+<li>操作 long double 类型数据，一定要分配两个 slot ，如果分配了一个 slot 不会报错，但会导致数据丢失;</li>
+<li>实例方法的第 0 个位置存储“ this ”关键字代表当前实例对象的引用。</li>
+</ol>
+<h2 id="3-字节码指令集">3. 字节码指令集</h2>
+<p><font color="red">注：大多数的指令有前缀和（或）后缀来表明其操作数的类型。</font></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">前/后缀</th>
+<th style="text-align:left">操作数类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">i</td>
+<td style="text-align:left">整数</td>
+</tr>
+<tr>
+<td style="text-align:left">l</td>
+<td style="text-align:left">长整数</td>
+</tr>
+<tr>
+<td style="text-align:left">s</td>
+<td style="text-align:left">短整数</td>
+</tr>
+<tr>
+<td style="text-align:left">b</td>
+<td style="text-align:left">字节</td>
+</tr>
+<tr>
+<td style="text-align:left">c</td>
+<td style="text-align:left">字符</td>
+</tr>
+<tr>
+<td style="text-align:left">f</td>
+<td style="text-align:left">单精度浮点数</td>
+</tr>
+<tr>
+<td style="text-align:left">d</td>
+<td style="text-align:left">双精度浮点数</td>
+</tr>
+<tr>
+<td style="text-align:left">z</td>
+<td style="text-align:left">布尔值</td>
+</tr>
+<tr>
+<td style="text-align:left">a</td>
+<td style="text-align:left">引用</td>
+</tr>
+</tbody>
+</table>
+<h3 id="加载和储存指令">加载和储存指令</h3>
+<p>加载和存储指令用于将数据从栈帧的局部变量表和操作数栈之间来回传输。</p>
+<table>
+<thead>
+<tr>
+<th>作用</th>
+<th>指令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>将一个局部变量加载到操作数栈</td>
+<td>iload，iload_&lt;n&gt;，lload，lload_&lt;n&gt;<br/>float， fload_&lt;n&gt;、dload，dload_&lt;n&gt;<br/>aload，aload_&lt;n&gt;</td>
+</tr>
+<tr>
+<td>将一个数值从操作数栈存储到局部变量表</td>
+<td>istore，istore_&lt;n&gt;，lstore，lstore_&lt;n&gt;<br/>fstore，fstore_&lt;n&gt;，dstore，dstore_&lt;n&gt;<br/>astore，astore_&lt;n&gt;</td>
+</tr>
+<tr>
+<td>将常量加载到操作数栈</td>
+<td>bipush，sipush<br/>ldc，ldc_w，ldc2_w<br/>aconst_null<br/>iconst_ml，iconst_&lt;i&gt;，lconst_&lt;l&gt;<br/>fconst_&lt;f&gt;，dconst_&lt;d&gt;</td>
+</tr>
+<tr>
+<td>局部变量表访问索引</td>
+<td>wide</td>
+</tr>
+</tbody>
+</table>
+<p>一部分以尖括号结尾的指令代表了一组指令，如 iload_&lt;i&gt;，代表了 iload_0，iload_1 等，这几组指令都是带有一个操作数的通用指令。</p>
+<h3 id="运算指令">运算指令</h3>
+<p>算术指令用于对两个操作数栈上的值进行某种特定运算，并把结果重新存入到操作栈顶。</p>
+<table>
+<thead>
+<tr>
+<th>作用</th>
+<th>指令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>加法</td>
+<td>iadd，ladd，fadd，dadd</td>
+</tr>
+<tr>
+<td>减法</td>
+<td>isub，lsub，fsub，dsub</td>
+</tr>
+<tr>
+<td>乘法</td>
+<td>imul，lmul，fmul，dmul</td>
+</tr>
+<tr>
+<td>除法</td>
+<td>idiv，ldiv，fdiv，ddiv</td>
+</tr>
+<tr>
+<td>求余</td>
+<td>irem，lrem，frem，drem</td>
+</tr>
+<tr>
+<td>取反</td>
+<td>ineg，leng，fneg，dneg</td>
+</tr>
+<tr>
+<td>位移</td>
+<td>ishl，ishr，iushr，lshl，lshr，lushr</td>
+</tr>
+<tr>
+<td>按位或指令</td>
+<td>ior，lor</td>
+</tr>
+<tr>
+<td>按位与指令</td>
+<td>iand，land</td>
+</tr>
+<tr>
+<td>按位异或指令</td>
+<td>ixor，lxor</td>
+</tr>
+<tr>
+<td>局部变量自增指令</td>
+<td>iinc</td>
+</tr>
+<tr>
+<td>比较指令</td>
+<td>dcmpg，dcmpl，fcmpg，fcmpl，lcmp</td>
+</tr>
+</tbody>
+</table>
+<p>Java 虚拟机没有明确规定整型数据溢出的情况，但规定了处理整型数据时，只有除法和求余指令出现除数为0时会导致虚拟机抛出异常。</p>
+<p>Java 虚拟机要求在浮点数运算的时候，所有结果否必须舍入到适当的精度，如果有两种可表示的形式与该值一样，会优先选择最低有效位为零的。称之为最接近数舍入模式。</p>
+<p>浮点数向整数转换的时候，Java 虚拟机使用 IEEE 754 标准中的向零舍入模式，这种模式舍入的结果会导致数字被截断，所有小数部分的有效字节会被丢掉。</p>
+<h3 id="类型转换指令">类型转换指令</h3>
+<p>类型转换指令将两种 Java 虚拟机数值类型相互转换，这些操作一般用于实现用户代码的显式类型转换操作。</p>
+<p>JVM 直接就支持宽化类型转换(小范围类型向大范围类型转换)：</p>
+<ol>
+<li>int 类型到 long，float，double 类型</li>
+<li>long 类型到 float，double 类型</li>
+<li>float 到 double 类型</li>
+</ol>
+<p>但在处理窄化类型转换时，必须显式使用转换指令来完成。</p>
+<table>
+<thead>
+<tr>
+<th>作用</th>
+<th>指令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>窄化类型转换</td>
+<td>i2b，i2c，i2s，l2i，f2i，f2l，d2i，d2l，d2f</td>
+</tr>
+</tbody>
+</table>
+<p>将 int 或 long 窄化为整型 T 的时候，仅仅简单的把除了低位的 N 个字节以外的内容丢弃，N 是 T 的长度。这有可能导致转换结果与输入值有不同的正负号。<br>
+在将一个浮点值窄化为整数类型 T（仅限于 int 和 long 类型），将遵循以下转换规则：</p>
+<ol>
+<li>如果浮点值是NaN ， 转换结果就是 int 或 long 类型的 0</li>
+<li>如果浮点值不是无穷大，浮点值使用 IEEE 754 的向零舍入模式取整，获得整数 v， 如果 v 在 T 表示范围之内，那结果就是 v</li>
+<li>否则，根据 v 的符号， 转换为 T 所能表示的最大或者最小正数</li>
+</ol>
+<h3 id="对象创建与访问指令">对象创建与访问指令</h3>
+<p>虽然类实例和数组都是对象，Java虚拟机对类实例和数组的创建与操作使用了不同的字节码指令。</p>
+<table>
+<thead>
+<tr>
+<th>作用</th>
+<th>指令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>创建实例</td>
+<td>new</td>
+</tr>
+<tr>
+<td>创建数组</td>
+<td>newarray，anewarray，multianewarray</td>
+</tr>
+<tr>
+<td>访问字段</td>
+<td>getfield，putfield，getstatic，putstatic</td>
+</tr>
+<tr>
+<td>把数组元素加载到操作数栈</td>
+<td>baload，caload，saload，ialoa，,laload，faload，daload，aaload</td>
+</tr>
+<tr>
+<td>将操作数栈的数值存储到数组元素中执行</td>
+<td>bastore，castore，castore，sastore，iastore，fastore，dastore，aastore</td>
+</tr>
+<tr>
+<td>取数组长度</td>
+<td>arraylength</td>
+</tr>
+<tr>
+<td>检查实例类型</td>
+<td>instanceof，checkcast</td>
+</tr>
+</tbody>
+</table>
+<h3 id="操作数栈管理指令">操作数栈管理指令</h3>
+<p>如同操作一个普通数据结构中的堆栈那样，Java 虚拟机提供了一些用于直接操作操作数栈的指令。</p>
+<table>
+<thead>
+<tr>
+<th>作用</th>
+<th>指令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>将操作数栈的栈顶一个或两个元素出栈</td>
+<td>pop，pop2</td>
+</tr>
+<tr>
+<td>复制栈顶一个或两个数值并将复制值或双份的复制值重新压入栈顶</td>
+<td>dup，dup2，dup_x1，dup2_x1，dup_x2，dup2_x2</td>
+</tr>
+<tr>
+<td>将栈最顶端的两个数值互换</td>
+<td>swap</td>
+</tr>
+</tbody>
+</table>
+<h3 id="控制转移指令">控制转移指令</h3>
+<p>让JVM有条件或无条件从指定指令而不是控制转移指令的下一条指令继续执行程序。</p>
+<table>
+<thead>
+<tr>
+<th>作用</th>
+<th>指令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>条件分支</td>
+<td>ifeq，iflt，ifle，ifne，ifgt，ifge<br/>ifnull，ifnotnull<br/>if_cmpeq，if_icmpne，if_icmlt，if_icmpgt等</td>
+</tr>
+<tr>
+<td>复合条件分支</td>
+<td>tableswitch，lookupswitch</td>
+</tr>
+<tr>
+<td>无条件分支</td>
+<td>goto，goto_w，jsr，jsr_w，ret</td>
+</tr>
+</tbody>
+</table>
+<p>JVM 中有专门的指令集处理 int 和 reference 类型的条件分支比较操作，为了可以无明显标示一个实体值是否是 null ,有专门的指令检测 null 值。<br>
+boolean/byte/char/short 类型的条件分支比较操作，都使用 int 类型的比较指令完成，而 long/float/double 条件分支比较操作，由相应类型的比较运算指令，运算指令会返回一个整型值到操作数栈中，随后再执行 int 类型的条件比较操作完成整个分支跳转。</p>
+<p>各种类型的比较都最终会转化为 int 类型的比较操作。</p>
+<h3 id="方法调用和返回指令">方法调用和返回指令</h3>
+<p><strong>方法调用</strong></p>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>invokevirtual</td>
+<td>调用对象的实例方法，根据对象的实际类型进行分派(虚拟机分派)</td>
+</tr>
+<tr>
+<td>invokeinterface</td>
+<td>调用接口方法，在运行时搜索一个实现这个接口方法的对象，找出合适的方法进行调用</td>
+</tr>
+<tr>
+<td>invokespecial</td>
+<td>调用需要特殊处理的实例方法，包括实例初始化方法，私有方法和父类方法</td>
+</tr>
+<tr>
+<td>invokestatic</td>
+<td>调用类方法(static)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>返回指令</strong></p>
+<p>方法返回指令是根据返回值的类型区分的，包括 ireturn (返回值是boolean/byte/char/short/int)，lreturn，freturn，drturn ，areturn，另外一个return供void方法，实例初始化方法，类和接口的类初始化方法使用。</p>
+<h3 id="异常处理指令">异常处理指令</h3>
+<p>在 Java 程序中显式抛出异常的操作（throw语句）都由 athrow 指令来实现，除了用 throw 语句显示抛出异常情况外，Java 虚拟机规范还规定了许多运行时异常会在其他 Java 虚拟机指令检测到异常状况时自动抛出。<br>
+在 Java 虚拟机中，处理异常不是由字节码指令来实现的，而是采用异常表来完成的。</p>
+<h3 id="同步指令">同步指令</h3>
+<p>方法级的同步是隐式的，无需通过字节码指令来控制，它实现在方法调用和返回操作中。虚拟机从方法常量池中的方法标结构中的 ACC_SYNCHRONIZED 标志区分是否是同步方法。方法调用时，调用指令会检查该标志是否被设置，若设置，执行线程持有 moniter ，然后执行方法，最后完成方法时释放 moniter 。<br>
+同步一段指令集序列，通常由 synchronized 块标示，JVM指令集中有 monitorenter 和 monitorexit 来支持 synchronized 语义。</p>
+<h1 id="三-字节码查看">三、字节码查看</h1>
+<p>Java 字节码类文件（.class）是 Java 编译器编译 Java 源文件（.java）产生的“目标文件”。它是一种8位字节的二进制流文件， 各个数据项按顺序紧密的从前向后排列， 相邻的项之间没有间隙， 这样可以使得 class 文件非常紧凑， 体积轻巧， 可以被 JVM 快速的加载至内存， 并且占据较少的内存空间（方便于网络的传输）。</p>
+<p>Java 源文件在被 Java 编译器编译之后， 每个类（或者接口）都单独占据一个 class 文件， 并且类中的所有信息都会在 class 文件中有相应的描述， 由于 class 文件很灵活， 它甚至比 Java 源文件有着更强的描述能力。</p>
+<p>一个 Java 类文件大致可以归为 10 个项：</p>
+<ul>
+<li>Magic：该项存放了一个 Java 类文件的魔数（magic number）和版本信息。一个 Java 类文件的前 4 个字节被称为它的魔数。每个正确的 Java 类文件都是以 0xCAFEBABE 开头的，这样保证了 Java 虚拟机能很轻松的分辨出 Java 文件和非 Java 文件。</li>
+<li>Version：该项存放了 Java 类文件的版本信息，它对于一个 Java 文件具有重要的意义。因为 Java 技术一直在发展，所以类文件的格式也处在不断变化之中。类文件的版本信息让虚拟机知道如何去读取并处理该类文件。</li>
+<li>Constant Pool：该项存放了类中各种文字字符串、类名、方法名和接口名称、final 变量以及对外部类的引用信息等常量。虚拟机必须为每一个被装载的类维护一个常量池，常量池中存储了相应类型所用到的所有类型、字段和方法的符号引用，因此它在 Java 的动态链接中起到了核心的作用。常量池的大小平均占到了整个类大小的 60% 左右。</li>
+<li>Access_flag：该项指明了该文件中定义的是类还是接口（一个 class 文件中只能有一个类或接口），同时还指名了类或接口的访问标志，如 public，private, abstract 等信息。</li>
+<li>This Class：指向表示该类全限定名称的字符串常量的指针。</li>
+<li>Super Class：指向表示父类全限定名称的字符串常量的指针。</li>
+<li>Interfaces：一个指针数组，存放了该类或父类实现的所有接口名称的字符串常量的指针。以上三项所指向的常量，特别是前两项，在我们用 ASM 从已有类派生新类时一般需要修改：将类名称改为子类名称；将父类改为派生前的类名称；如果有必要，增加新的实现接口。</li>
+<li>Fields：该项对类或接口中声明的字段进行了细致的描述。需要注意的是，fields 列表中仅列出了本类或接口中的字段，并不包括从超类和父接口继承而来的字段。</li>
+<li>Methods：该项对类或接口中声明的方法进行了细致的描述。例如方法的名称、参数和返回值类型等。需要注意的是，methods 列表里仅存放了本类或本接口中的方法，并不包括从超类和父接口继承而来的方法。使用 ASM 进行 AOP 编程，通常是通过调整 Method 中的指令来实现的。</li>
+<li>Class attributes：该项存放了在该文件中类或接口所定义的属性的基本信息。</li>
+</ul>
+<p>对于一个类字节码的查看，我们可以使用 Eclipse 的 bytecode 插件进行方便的查看，并且此插件还提供了生成相关 ASM 代码的能力。</p>
+<figure data-type="image" tabindex="1"><img src="https://su18.org/post-images/1582881376306.png" alt="" loading="lazy"></figure>
+<h1 id="四-asm-的使用">四、ASM 的使用</h1>
+<p>有了上述基础知识的简单铺垫，接下来开始学习 ASM 字节码操纵的库的使用。</p>
+<p>ASM 字节码处理框架是用 Java 开发的而且使用基于访问者模式生成字节码及驱动类到字节码的转换，通俗的讲，它就是对 class 文件的 CRUD，经过 CRUD 后的字节码可以转换为类。</p>
+<p>由于 Java class 被存储在严格格式定义的 .class 文件里，这些类文件拥有足够的元数据来解析类中的所有元素：类名称、方法、属性以及 Java 字节码（指令）。ASM从类文件中读入信息后，能够改变类行为，分析类信息，甚至能够根据用户要求生成新类。</p>
+<p>ASM 库主要由以下组成：</p>
+<ul>
+<li>Core：为其他包提供基础的读、写、转化Java字节码和定义的API，并且可以生成Java字节码和实现大部分字节码的转换，在 访问者模式和 ASM 中介绍的几个重要的类就在 Core API 中：ClassReader、ClassVisitor 和 ClassWriter 类。</li>
+<li>Tree：提供了 Java 字节码在内存中的表现。</li>
+<li>Commons：提供了一些常用的简化字节码生成、转换的类和适配器。</li>
+<li>Util：包含一些帮助类和简单的字节码修改类，有利于在开发或者测试中使用。</li>
+<li>XML：提供一个适配器将XML和SAX-comliant转化成字节码结构，可以允许使用XSLT去定义字节码转化。</li>
+</ul>
+<p>可根据需求使用，如果想全部加载可用 asm-all 进行配置。</p>
+<h2 id="1-重点类查看">1. 重点类查看</h2>
+<p>首先来看下一些比较重要的类</p>
+<h3 id="classvisitor-抽象类">ClassVisitor 抽象类</h3>
+<p>位于包 <code>org.objectweb.asm</code> 下，抽象类中提供了一些方法，这些方法会对类中相应的部分进行操作，并且必须按照如下顺序：<br>
+visit [visitSource] [visitModule] [visitNestHost] [visitOuterClass] ( visitAnnotation|visitTypeAnnotation|visitAttribute) (visitNestMember|visitInnerClass|visitField|visitMethod}) visitEnd</p>
+<ul>
+<li><code>void visit(int version, int access, String name, String signature, String superName, String[] interfaces)</code><br>
+当扫描类时第一个调用的方法，主要用于类声明使用。下面是对方法中各个参数的示意：visit( 类版本 , 修饰符 , 类名 , 泛型信息 , 继承的父类 , 实现的接口)</li>
+<li><code>AnnotationVisitor visitAnnotation(String desc, boolean visible)</code><br>
+当扫描器扫描到类注解声明时进行调用。下面是对方法中各个参数的示意：visitAnnotation(注解类型 , 注解是否可以在 JVM 中可见)。</li>
+<li><code>FieldVisitor visitField(int access, String name, String desc, String signature, Object value)</code><br>
+当扫描器扫描到类中字段时进行调用。下面是对方法中各个参数的示意：visitField(修饰符 , 字段名 , 字段类型 , 泛型描述 , 默认值)</li>
+<li><code>MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions)</code><br>
+当扫描器扫描到类的方法时进行调用。下面是对方法中各个参数的示意：visitMethod(修饰符 , 方法名 , 方法签名 , 泛型信息 , 抛出的异常)</li>
+<li><code>void visitEnd()</code><br>
+当扫描器完成类扫描时调用</li>
+</ul>
+<p>在使用时，我们需要继承此类，并指定asm api的版本。</p>
+<h3 id="classreader-类">ClassReader 类</h3>
+<p>位于包 <code>org.objectweb.asm</code> 下，这个类会将 .class 文件读入到 ClassReader 中的字节数组中，它的 <code>accept()</code> 方法接受一个 ClassVisitor 实现类，并按照顺序调用 ClassVisitor 中的方法。</p>
+<p>此函数的构造方法接收 InputStream/byte[] 类字节码文件，或 String 类名通过 <code>ClassLoader.getSystemResourceAsStream()</code> 获取，最后转为 byte[]。</p>
+<p>同时，此类还提供了一些 get 方法用来获取读入类的信息。</p>
+<h3 id="classwriter-类">ClassWriter 类</h3>
+<p>位于包 <code>org.objectweb.asm</code> 下，ClassWriter 是一个 ClassVisitor 的子类，是和 ClassReader 对应的类，ClassReader 是将 .class 文件读入到一个字节数组中，ClassWriter 是将修改后的类的字节码内容以字节数组的形式输出。</p>
+<h3 id="fieldvisitor-抽象类">FieldVisitor 抽象类</h3>
+<p>位于包 <code>org.objectweb.asm</code> 下，FieldVisitor 是一个抽象类，当 ASM 的 ClassReader 读取到 Field 时就转入 FieldVisitor 接口处理。作为 ClassVisitor.visitField 的返回值。</p>
+<h3 id="methodvisitor-抽象类">MethodVisitor 抽象类</h3>
+<p>位于包 <code>org.objectweb.asm</code> 下，当 ASM 的 ClassReader 读取到 Method 时就转入 MethodVisitor 接口处理。作为 ClassVisitor.visitMethod 的返回值。</p>
+<h3 id="adviceadapter-类">AdviceAdapter 类</h3>
+<p>位于包 <code>org.objectweb.asm.commons</code> 下，AdviceAdapter 是 MethodVisitor 的子类，使用 AdviceAdapter 可以更方便的修改方法的字节码。</p>
+<p>其中比较重要的几个方法如下：</p>
+<ul>
+<li><code>void visitCode()</code>：表示 ASM 开始扫描这个方法。</li>
+<li><code>void onMethodEnter()</code>：进入这个方法。</li>
+<li><code>void onMethodExit()</code>：即将从这个方法出去。</li>
+<li><code>void onVisitEnd()</code>：表示方法扫码完毕。</li>
+</ul>
+<h2 id="2-实现流程">2. 实现流程</h2>
+<h3 id="使用-asm-编写一个类">使用 ASM 编写一个类</h3>
+<p>这里为了举例创造一个需求，假设我们有一个类 Father。</p>
+<pre><code class="language-java">package org.su18;
+
+public class Father {
+
+	protected String str = &quot;who is your daddy?&quot;;
+
+
+	public void say() {
+		System.out.println(&quot;Father says:&quot; + this.str);
+	}
+}
+</code></pre>
+<p>然后我们想手写一个类字节码 Son.class，实现大概如下的功能</p>
+<pre><code class="language-java">package org.su18;
+
+public class Son extends Father {
+
+	public static void main(String[] args) {
+		Son son = new Son();
+		son.say();
+	}
+
+	@Override
+	public void say() {
+		super.say();
+		System.out.println(&quot;Son says:I see dead people!&quot;);
+	}
+
+}
+</code></pre>
+<p>运行这个类的 main 方法显而易见的输出是：<br>
+<img src="https://su18.org/post-images/1582901753337.png" alt="" loading="lazy"></p>
+<p>接下来我们来手写这个类，直接上代码，每一步的注释都很详细，细节可以参考上面几章：</p>
+<pre><code class="language-java">package org.su18;
+
+
+import org.objectweb.asm.*;
+
+public class SonClassGenerator {
+
+	/**
+	 * 生成类
+	 *
+	 * @return 返回类字节码
+	 */
+	public static byte[] generate() {
+
+		// 实例化 ClassWriter，参数 flag 取值为0、1、2
+		// 0时表示需要手动计算最大操作数栈、局部变量表、桢变化；
+		// ClassWriter.COMPUTE_MAXS表示自动计算局部变量表和操作数栈，但是必须要调用visitMaxs，方法参数会被忽略。
+		// 桢变化需要手动计算ClassWriter.COMPUTE_FRAMES表示全自动计算，但是必须要调用visitMaxs，方法参数会被忽略。
+		// 但ClassWriter.COMPUTE_MAXS比0慢10%，比COMPUTE_FRAMES慢一倍。
+		ClassWriter cw = new ClassWriter(0);
+
+
+		// 声明一个类，使用JDK1.8版本，public的类，类名 org.su18.Son，不是泛型类，父类是org.su18.Father，没有实现任何接口
+		cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, &quot;org/su18/Son&quot;, null, &quot;org/su18/Father&quot;, null);
+
+		// 我们知道在一个对象没有构造函数时，会自动生成一个无参的构造函数，在有父类的情况下，可直接继承父类中无参构造函数
+		// public 方法，方法名 &lt;init&gt; 相当于 Constants.ACC_CONSTRUCTOR，
+		// 描述符 ()V 表示函数，无参数，无返回值，方法签名 null，方法异常的内部名称，为 null
+		MethodVisitor constructor = cw.visitMethod(Opcodes.ACC_PUBLIC, &quot;&lt;init&gt;&quot;, &quot;()V&quot;, null, null);
+		// 非抽象方法使用 visitCode() 开始访问方法，可以理解为函数体的开始
+		constructor.visitCode();
+		// visitXXXInsn()来填充函数，添加方法实现的字节码
+		// 非 static 方法的第一个参数为 this 对象
+		// 第一个参数为指令，第二个参数是局部变量表中的地址
+		constructor.visitVarInsn(Opcodes.ALOAD, 0);
+		// 执行父类的构造函数，调用父类方法 INVOKESPECIAL，方法所在类名，方法名，方法返回值，函数所在类是否为接口
+		constructor.visitMethodInsn(Opcodes.INVOKESPECIAL, &quot;org/su18/Father&quot;, &quot;&lt;init&gt;&quot;, &quot;()V&quot;, false);
+		// 执行指令，构造函数没有返回值，所以是 RETURN
+		constructor.visitInsn(Opcodes.RETURN);
+		// 通过 visitMaxs 来指定局部变量表与操作数栈的大小，也可以理解为函数体的结束
+		constructor.visitMaxs(1, 1);
+		// 访问方法结束
+		constructor.visitEnd();
+
+
+		// 创建 say 方法，此方法重写父类方法，并使用 super 调用父类 say 方法
+		// 创建 MethodVisitor
+		MethodVisitor say = cw.visitMethod(Opcodes.ACC_PUBLIC, &quot;say&quot;, &quot;()V&quot;, null, null);
+		say.visitCode();
+		say.visitVarInsn(Opcodes.ALOAD, 0);
+		// 调用父类方法
+		say.visitMethodInsn(Opcodes.INVOKESPECIAL, &quot;org/su18/Father&quot;, &quot;say&quot;, &quot;()V&quot;, false);
+		// 获取一个java.io.PrintStream对象
+		say.visitFieldInsn(Opcodes.GETSTATIC, &quot;java/lang/System&quot;, &quot;out&quot;, &quot;Ljava/io/PrintStream;&quot;);
+		// 将int, float或 String 型常量值从常量池中推送至栈顶
+		say.visitLdcInsn(&quot;Son says:I see dead people!&quot;);
+		// 添加执行的方法，执行的是参数为字符串，无返回值的println函数
+		say.visitMethodInsn(Opcodes.INVOKEVIRTUAL, &quot;java/io/PrintStream&quot;, &quot;println&quot;, &quot;(Ljava/lang/String;)V&quot;, false);
+		say.visitInsn(Opcodes.RETURN);
+		say.visitMaxs(2, 1);
+		say.visitEnd();
+
+		// 创建 main 方法
+
+		MethodVisitor main = cw.visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, &quot;main&quot;,
+				&quot;([Ljava/lang/String;)V&quot;, null, null);
+		main.visitCode();
+		//标识位置
+		Label l0 = new Label();
+		main.visitLabel(l0);
+		// new 一个 Son 类，并赋值给对象
+		main.visitTypeInsn(Opcodes.NEW, &quot;org/su18/Son&quot;);
+		// 压入栈顶
+		main.visitInsn(Opcodes.DUP);
+		// 我们知道 new 一个实例就是调用构造方法
+		main.visitMethodInsn(Opcodes.INVOKESPECIAL, &quot;org/su18/Son&quot;, &quot;&lt;init&gt;&quot;, &quot;()V&quot;, false);
+		// 储存在局部变量表的第一个位置
+		main.visitVarInsn(Opcodes.ASTORE, 1);
+		// 标识位置
+		Label l1 = new Label();
+		main.visitLabel(l1);
+		// 将局部变量加载至栈
+		main.visitVarInsn(Opcodes.ALOAD, 1);
+		main.visitMethodInsn(Opcodes.INVOKEVIRTUAL, &quot;org/su18/Son&quot;, &quot;say&quot;, &quot;()V&quot;, false);
+		// 标识位置
+		Label l2 = new Label();
+		main.visitLabel(l2);
+
+		main.visitInsn(Opcodes.RETURN);
+		// 标识位置
+		Label l3 = new Label();
+		main.visitLabel(l3);
+		// visitLocalVariable，本地变量名，描述符，签名，与该局部变量的范围相对应的第一条指令，最后一条指令，局部变量索引
+		main.visitLocalVariable(&quot;args&quot;, &quot;[Ljava/lang/String;&quot;, null, l0, l3, 0);
+		main.visitLocalVariable(&quot;son&quot;, &quot;Lorg/su18/Son;&quot;, null, l1, l3, 1);
+		main.visitMaxs(2, 2);
+		main.visitEnd();
+
+		// ClassWriter 访问结束
+		cw.visitEnd();
+
+		// 返回 byte[]
+		return cw.toByteArray();
+
+	}
+
+
+	public static void main(String[] args) throws Exception {
+
+		String   className = &quot;org.su18.Son&quot;;
+		Class&lt;?&gt; clazz     = new MyClassLoader().defineClassForName(className, generate());
+		clazz.getMethod(&quot;main&quot;,String[].class).invoke(clazz.newInstance(),new String[1]);
+
+	}
+}
+</code></pre>
+<p>在这里，我们为了方便验证，自定义了一个 ClassLoader ，使用 defineClass 直接加载类字节码并使用反射调用。</p>
+<pre><code class="language-java">package org.su18;
+
+public class MyClassLoader extends ClassLoader {
+
+	public Class&lt;?&gt; defineClassForName(String name, byte[] data) {
+		return this.defineClass(name, data, 0, data.length);
+	}
+}
+</code></pre>
+<p>运行结果：<br>
+<img src="https://su18.org/post-images/1582913650697.png" alt="" loading="lazy"></p>
+<p>这部分需要注意的是要自行计算局部变量表与操作数栈，一定要注意算准点，不然会导致溢出或无法匹配。</p>
+<p>也可以使用 bytecode 插件快速生成 ASM 代码，可以直接拿过来用，而且用来参考还是很方便的。</p>
+<p>第一次写这个类的时候我也很懵，感觉不知道自己在干嘛，但是实际想想，这跟直接写 Java 代码实际没差，只不过我们写 java 代码时用编辑器，运行时也由 Idea 等编辑器帮我们编译成 class 文件，这致使我们忽略了很多的细节，比如修饰符，参数顺序，对象本身等等。在调用各种函数时，我们往往也只关注封装的接口，在实际使用时，我们也应该更加关注细节部分。</p>
+<h3 id="使用-asm-更改增强一个类">使用 ASM 更改/增强一个类</h3>
+<p>在已有的类基础上，我们想要使用 agent 技术在类加载之前对 class 文件进行增强，完成自定义逻辑。<br>
+于是就使用 ASM 结合上一篇的 Instrumentation 写一个小 demo 。</p>
+<p>我们沿用上面的 Father 和 Son，我们想在 class 文件载入 JVM 前对 Son 这个类的 main 方法和 say 方法进入和退出之前都进行 Hook ，插入我们自己的逻辑代码。</p>
+<p>首先看下实现流程：</p>
+<ol>
+<li>实现自己的 Transformer 和 premain，用于 agent ；</li>
+<li>实现自己的 ClassVisitor，重写一些方法，实现自己的调用逻辑。</li>
+<li>实现自己的 MethodVisitor，继承至 AdviceAdapter，因为后者实现封装了很多方法，可供我们直接调用，并且提供了 <code>onMethodEnter()</code> 和 <code>onMethodExit()</code> 供我们重写和调用。</li>
+</ol>
+<p>大致的调用链就是，使用 agent 后，通过我们自定义的 Transformer 截取到类字节码，然后使用我们自定义的 ClassVisiter 访问并解析类的相关信息，对类方法字节码的改变使用自定义的 MethodVisitor 进行增强。</p>
+<p>代码过多就不直接粘了，已经上传至 https://github.com/JosephTribbianni/Interesting。</p>
+<p>最后的输出结果为：<br>
+<img src="https://su18.org/post-images/1582965024985.png" alt="" loading="lazy"></p>
+<h1 id="五-新手入门">五、新手入门</h1>
+<p>在有了上述基础后，我们来看一个实战项目，本项目为园长在上古时代写的专门 Hook 并记录 Java 表达式语言执行的 Agent 小程序，用来做新手入门正好，这里读一下源码分析一下实现逻辑。<br>
+项目地址：https://github.com/anbai-inc/javaweb-expression</p>
+<p>首先定义一个内部类 MethodHookDesc 用来储存 Hook 到的方法的信息，包括类名、方法名、方法参数描述符。<br>
+<img src="https://su18.org/post-images/1582967503455.png" alt="" loading="lazy"></p>
+<p>然后定义了一个 ArrayList 储存想 Hook 的类的相关信息，就是 MethodHookDesc 对象们。</p>
+<figure data-type="image" tabindex="2"><img src="https://su18.org/post-images/1582967572081.png" alt="" loading="lazy"></figure>
+<p>premain 方法里添加的新的 ClassFileTransformer ，并自行实现 transform 方法。</p>
+<p>如果传入的 className 与 ArrayList 里存储的类名一致的情况下，调用 ASM 进行类的访问。</p>
+<p>流程与我们上一章写的简单的 Demo 是一致的，实例化 ClassWriter-&gt; 自定义 ClassVisitor，重写visit 和 visitMethod 方法，在 visitMethod 方法中调用自定义的 MethodVisitor 方法，进行逻辑处理，将自己的字节码写入-&gt;调用 ClassWriter 的 accept 方法传入自己的 ClassVisitor-&gt; 返回类字节码。</p>
+<figure data-type="image" tabindex="3"><img src="https://su18.org/post-images/1582968288844.png" alt="" loading="lazy"></figure>
+<p>可以看到这里是在 visitCode() 进入代码体时调用了本类的 expression 方法。</p>
+<figure data-type="image" tabindex="4"><img src="https://su18.org/post-images/1582968417701.png" alt="" loading="lazy"></figure>
+<p>打印了调用链。</p>
+<h1 id="六-参考链接">六、参考链接</h1>
+<p>https://www.baidu.com/s?wd=%E5%A6%82%E4%BD%95%E9%98%B2%E8%84%B1%E5%8F%91</p>
+
+              </div>
+              <div class="toc-container">
+                <ul class="markdownIt-TOC">
+<li><a href="#%E4%B8%80-%E5%89%8D%E8%A8%80">一、前言</a></li>
+<li><a href="#%E4%BA%8C-%E5%AD%97%E8%8A%82%E7%A0%81">二、字节码</a>
+<ul>
+<li><a href="#1-%E5%AD%97%E8%8A%82%E7%A0%81%E5%AE%9A%E4%B9%89">1. 字节码定义</a></li>
+<li><a href="#2-%E5%AD%97%E8%8A%82%E7%A0%81%E6%89%A7%E8%A1%8C">2. 字节码执行</a>
+<ul>
+<li><a href="#%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F%E8%A1%A8-local-variables">局部变量表 local variables</a></li>
+<li><a href="#%E6%93%8D%E4%BD%9C%E6%95%B0%E6%A0%88-operand-stack">操作数栈 operand stack</a></li>
+<li><a href="#%E5%8A%A8%E6%80%81%E9%93%BE%E6%8E%A5">动态链接</a></li>
+<li><a href="#%E6%96%B9%E6%B3%95%E8%BF%94%E5%9B%9E%E5%9C%B0%E5%9D%80">方法返回地址</a></li>
+</ul>
+</li>
+<li><a href="#3-%E5%AD%97%E8%8A%82%E7%A0%81%E6%8C%87%E4%BB%A4%E9%9B%86">3. 字节码指令集</a>
+<ul>
+<li><a href="#%E5%8A%A0%E8%BD%BD%E5%92%8C%E5%82%A8%E5%AD%98%E6%8C%87%E4%BB%A4">加载和储存指令</a></li>
+<li><a href="#%E8%BF%90%E7%AE%97%E6%8C%87%E4%BB%A4">运算指令</a></li>
+<li><a href="#%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2%E6%8C%87%E4%BB%A4">类型转换指令</a></li>
+<li><a href="#%E5%AF%B9%E8%B1%A1%E5%88%9B%E5%BB%BA%E4%B8%8E%E8%AE%BF%E9%97%AE%E6%8C%87%E4%BB%A4">对象创建与访问指令</a></li>
+<li><a href="#%E6%93%8D%E4%BD%9C%E6%95%B0%E6%A0%88%E7%AE%A1%E7%90%86%E6%8C%87%E4%BB%A4">操作数栈管理指令</a></li>
+<li><a href="#%E6%8E%A7%E5%88%B6%E8%BD%AC%E7%A7%BB%E6%8C%87%E4%BB%A4">控制转移指令</a></li>
+<li><a href="#%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8%E5%92%8C%E8%BF%94%E5%9B%9E%E6%8C%87%E4%BB%A4">方法调用和返回指令</a></li>
+<li><a href="#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E6%8C%87%E4%BB%A4">异常处理指令</a></li>
+<li><a href="#%E5%90%8C%E6%AD%A5%E6%8C%87%E4%BB%A4">同步指令</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%E4%B8%89-%E5%AD%97%E8%8A%82%E7%A0%81%E6%9F%A5%E7%9C%8B">三、字节码查看</a></li>
+<li><a href="#%E5%9B%9B-asm-%E7%9A%84%E4%BD%BF%E7%94%A8">四、ASM 的使用</a>
+<ul>
+<li><a href="#1-%E9%87%8D%E7%82%B9%E7%B1%BB%E6%9F%A5%E7%9C%8B">1. 重点类查看</a>
+<ul>
+<li><a href="#classvisitor-%E6%8A%BD%E8%B1%A1%E7%B1%BB">ClassVisitor 抽象类</a></li>
+<li><a href="#classreader-%E7%B1%BB">ClassReader 类</a></li>
+<li><a href="#classwriter-%E7%B1%BB">ClassWriter 类</a></li>
+<li><a href="#fieldvisitor-%E6%8A%BD%E8%B1%A1%E7%B1%BB">FieldVisitor 抽象类</a></li>
+<li><a href="#methodvisitor-%E6%8A%BD%E8%B1%A1%E7%B1%BB">MethodVisitor 抽象类</a></li>
+<li><a href="#adviceadapter-%E7%B1%BB">AdviceAdapter 类</a></li>
+</ul>
+</li>
+<li><a href="#2-%E5%AE%9E%E7%8E%B0%E6%B5%81%E7%A8%8B">2. 实现流程</a>
+<ul>
+<li><a href="#%E4%BD%BF%E7%94%A8-asm-%E7%BC%96%E5%86%99%E4%B8%80%E4%B8%AA%E7%B1%BB">使用 ASM 编写一个类</a></li>
+<li><a href="#%E4%BD%BF%E7%94%A8-asm-%E6%9B%B4%E6%94%B9%E5%A2%9E%E5%BC%BA%E4%B8%80%E4%B8%AA%E7%B1%BB">使用 ASM 更改/增强一个类</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#%E4%BA%94-%E6%96%B0%E6%89%8B%E5%85%A5%E9%97%A8">五、新手入门</a></li>
+<li><a href="#%E5%85%AD-%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5">六、参考链接</a></li>
+</ul>
+
+              </div>
+            </div>
+          </article>
+        </div>
+
+        
+          <div class="next-post">
+            <div class="next">下一篇</div>
+            <a href="https://su18.org/post/irP0RsYK1/">
+              <h3 class="post-title">
+                Java Instrumentation
+              </h3>
+            </a>
+          </div>
+        
+
+        
+          
+            <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+
+<div id="gitalk-container"></div>
+
+<script>
+
+  var gitalk = new Gitalk({
+    clientID: 'f7b59be97fcefada5030',
+    clientSecret: 'dfbf7baf0b69544dbf1bc8c904338e31280cea7f',
+    repo: 'blogtalk',
+    owner: 'JosephTribbianni',
+    admin: ['JosephTribbianni'],
+    id: (location.pathname).substring(0, 49),      // Ensure uniqueness and length less than 50
+    distractionFreeMode: false  // Facebook-like distraction free mode
+  })
+
+  gitalk.render('gitalk-container')
+
+</script>
+
+          
+
+          
+        
+
+        <div class="site-footer">
+  网站使用 <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a> 花了0.23s 搭建完成 | 
+  <a class="rss" href="https://su18.org/atom.xml" target="_blank">RSS</a>
+</div>
+
+<script>
+  hljs.initHighlightingOnLoad()
+
+  let mainNavLinks = document.querySelectorAll(".markdownIt-TOC a");
+
+  // This should probably be throttled.
+  // Especially because it triggers during smooth scrolling.
+  // https://lodash.com/docs/4.17.10#throttle
+  // You could do like...
+  // window.addEventListener("scroll", () => {
+  //    _.throttle(doThatStuff, 100);
+  // });
+  // Only not doing it here to keep this Pen dependency-free.
+
+  window.addEventListener("scroll", event => {
+    let fromTop = window.scrollY;
+
+    mainNavLinks.forEach((link, index) => {
+      let section = document.getElementById(decodeURI(link.hash).substring(1));
+      let nextSection = null
+      if (mainNavLinks[index + 1]) {
+        nextSection = document.getElementById(decodeURI(mainNavLinks[index + 1].hash).substring(1));
+      }
+      console.log('section.offsetHeight', section.offsetHeight);
+      if (section.offsetTop <= fromTop) {
+        if (nextSection) {
+          if (nextSection.offsetTop > fromTop) {
+            link.classList.add("current");
+          } else {
+            link.classList.remove("current");    
+          }
+        } else {
+          link.classList.add("current");
+        }
+      } else {
+        link.classList.remove("current");
+      }
+    });
+  });
+
+</script>
+
+      </div>
+    </div>
+  </body>
+</html>
