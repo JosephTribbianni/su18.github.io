@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://su18.org</id>
     <title>素十八</title>
-    <updated>2020-04-08T06:40:41.383Z</updated>
+    <updated>2020-04-15T08:02:40.338Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://su18.org"/>
     <link rel="self" href="https://su18.org/atom.xml"/>
@@ -18,25 +18,11 @@
         <updated>2020-04-08T06:36:13.000Z</updated>
     </entry>
     <entry>
-        <title type="html"><![CDATA[字节码及ASM入门]]></title>
-        <id>https://su18.org/post/Nlwq9S-Ru/</id>
-        <link href="https://su18.org/post/Nlwq9S-Ru/">
-        </link>
-        <updated>2020-02-28T07:19:00.000Z</updated>
-    </entry>
-    <entry>
         <title type="html"><![CDATA[Java Instrumentation]]></title>
         <id>https://su18.org/post/irP0RsYK1/</id>
         <link href="https://su18.org/post/irP0RsYK1/">
         </link>
         <updated>2020-02-24T10:11:11.000Z</updated>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[Java 反射]]></title>
-        <id>https://su18.org/post/A3LjMkeNC/</id>
-        <link href="https://su18.org/post/A3LjMkeNC/">
-        </link>
-        <updated>2019-12-11T06:39:58.000Z</updated>
     </entry>
     <entry>
         <title type="html"><![CDATA[中国特色PHP大马]]></title>
