@@ -2,14 +2,21 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://su18.org</id>
     <title>素十八</title>
-    <updated>2020-10-16T07:31:50.191Z</updated>
+    <updated>2020-12-13T15:12:52.874Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://su18.org"/>
     <link rel="self" href="https://su18.org/atom.xml"/>
-    <subtitle>暖风熏得游人醉，直把杭州作汴州。</subtitle>
+    <subtitle>你救赎的人 终将成为你的光</subtitle>
     <logo>https://su18.org/images/avatar.png</logo>
     <icon>https://su18.org/favicon.ico</icon>
     <rights>All rights reserved 2020, 素十八</rights>
+    <entry>
+        <title type="html"><![CDATA[2020年终总结]]></title>
+        <id>https://su18.org/post/2020-review/</id>
+        <link href="https://su18.org/post/2020-review/">
+        </link>
+        <updated>2020-12-13T13:23:03.000Z</updated>
+    </entry>
     <entry>
         <title type="html"><![CDATA[su18.jsp]]></title>
         <id>https://su18.org/post/EGEEV4lxd/</id>
