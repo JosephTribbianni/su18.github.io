@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://su18.org</id>
     <title>素十八</title>
-    <updated>2021-03-01T06:30:19.993Z</updated>
+    <updated>2021-03-01T06:35:01.685Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://su18.org"/>
     <link rel="self" href="https://su18.org/atom.xml"/>
@@ -16,13 +16,6 @@
         <link href="https://su18.org/post/2020-reading/">
         </link>
         <updated>2021-01-10T02:42:59.000Z</updated>
-    </entry>
-    <entry>
-        <title type="html"><![CDATA[JavaWeb代码审计]]></title>
-        <id>https://su18.org/post/-s6HpZjn8/</id>
-        <link href="https://su18.org/post/-s6HpZjn8/">
-        </link>
-        <updated>2020-12-17T00:36:35.000Z</updated>
     </entry>
     <entry>
         <title type="html"><![CDATA[2020年终总结]]></title>
@@ -40,8 +33,8 @@
     </entry>
     <entry>
         <title type="html"><![CDATA[su18.jsp]]></title>
-        <id>https://su18.org/post/EGEEV4lxd/</id>
-        <link href="https://su18.org/post/EGEEV4lxd/">
+        <id>https://su18.org/post/su18.jsp/</id>
+        <link href="https://su18.org/post/su18.jsp/">
         </link>
         <updated>2020-09-23T07:28:05.000Z</updated>
     </entry>
@@ -61,15 +54,15 @@
     </entry>
     <entry>
         <title type="html"><![CDATA[中国特色PHP大马]]></title>
-        <id>https://su18.org/post/EiNzuduRG/</id>
-        <link href="https://su18.org/post/EiNzuduRG/">
+        <id>https://su18.org/post/su18.php/</id>
+        <link href="https://su18.org/post/su18.php/">
         </link>
         <updated>2019-11-01T03:32:30.000Z</updated>
     </entry>
     <entry>
         <title type="html"><![CDATA[您好，我叫素十八]]></title>
-        <id>https://su18.org/post/kA_vAGNnK/</id>
-        <link href="https://su18.org/post/kA_vAGNnK/">
+        <id>https://su18.org/post/hello-world/</id>
+        <link href="https://su18.org/post/hello-world/">
         </link>
         <updated>2019-08-30T10:10:43.000Z</updated>
     </entry>
